@@ -16,7 +16,7 @@ public class HelloWorld extends LinearOpMode{
     @Override
 
     public void runOpMode() throws InterruptedException{
-
+        telemetry.addData("Message", "Hello Nerd!");
         telemetry.addData("Message", "Hello World!");
         telemetry.update();
 
