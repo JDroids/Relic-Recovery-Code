@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
 
 /**
  * Created by dansm on 12/7/2017.
@@ -13,17 +14,49 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 public class JDTeleop extends LinearOpMode{
     @Override
 
-    DcMotor frontLeftDriveMotor = null;
-    DcMotor frontRightDriveMotor = null;
-    DcMotor backLeftDriveMotor = null;
-    DcMotor backRightDriveMotor = null;
-
     public void runOpMode() throws InterruptedException{
         //Code to run after init is pressed
 
+        double STRAFING_LIMIT = 0.1;
+
+        double[] SERVO_GRABBER_INIT_POSITION = [double 0.5, double 0.3];
+        double[] SERVO_GRABBER_CLOSE_POSITION = [double 0.0, double 0.8];
+        double[] SERVO_GRABBER_OPEN_POSITION = [double 0.2, double 0.6];
+        double[] SERVO_GRABBER_WIDE_OPEN_POSITION = [double 0.5, double 0.3];
+
+
+        double JEWEL_KNOCK_INIT_POSITION = 0;
+        double JEWEL_ARM_INIT_POSITION = 0.9;
+
+
+
+        DcMotor frontLeftDriveMotor = null;
+        DcMotor frontRightDriveMotor = null;
+        DcMotor backLeftDriveMotor = null;
+        DcMotor backRightDriveMotor = null;
+
+        DcMotor firstGlyphLift = null;
+        DcMotor secondGlyphLift = null;
+
+        Servo servoGrabberLeft = null;
+        Servo servoGrabberRight = null;
+
         //TODO: Get hardware map setup
 
+        frontLeftDriveMotor = hardwareMap.dcMotor.get("FrontLeft");
+        frontRightDriveMotor = hardwareMap.dcMotor.get("FrontRight");
+        backLeftDriveMotor = hardwareMap.dcMotor.get("BackLeft");
+        backRightDriveMotor = hardwareMap.dcMotor.get("BackRight");
+
+        firstGlyphLift = hardwareMap.dcMotor.get("MotorGlyphLift");
+        secondGlyphLift = hardwareMap.dcMotor.get("MotorGlyphLift2");
+
+        servoGrabberLeft = hardwareMap.servo.get("servoGrabberRight");
+        servoGrabberRight = hardwareMap.servo.get("servoGrabberLeft");
+
         waitForStart();
+
+        setGrabber(SERVO_GRABBER_INIT_POSITION[0], SERVO_GRABBER_INIT_POSITION[1]);
 
         double gamepad1LeftY;
         double gamepad1RightY;
@@ -38,16 +71,24 @@ public class JDTeleop extends LinearOpMode{
 
             move(gamepad1LeftY, gamepad1RightY, gamepad1LeftX, gamepad1RightX);
 
-            //TODO: Get glyph grabber lift and closing/opening setup NOTE: SERVOS CAN'T MOVE DURING INIT THAT IS ILLEGAL
+            if(gamepad2.a){
+                setGrabber(SERVO_GRABBER_CLOSE_POSITION[0], SERVO_GRABBER_CLOSE_POSITION[1]);
+            }
+            else if(gamepad2.b){
+                setGrabber(SERVO_GRABBER_OPEN_POSITION[0], SERVO_GRABBER_OPEN_POSITION[1]);
+            }
+            else if(gamepad2.y){
+                setGrabber(SERVO_GRABBER_WIDE_OPEN_POSITION[0], SERVO_GRABBER_WIDE_OPEN_POSITION[1]);
+            }
+
+            //TODO: Get glyph grabber lift and closing/opening setup NOTE: SERVOS CAN'T MOVE DURING TELEOP INIT THAT IS ILLEGAL
         }
 
         //Code to run after play is pressed
     }
 
-    double STRAFING_LIMIT = 0.1;
-
     public void move(double leftY, double rightY, double leftX, double rightX){
-        if(gamepadLeftX >= STRAFING_LIMIT && gamepadRightX >= STRAFING_LIMIT || gamepadLeftX <= STRAFING_LIMIT && gamepadRightX <= STRAFING_LIMIT){
+        if(leftY >= STRAFING_LIMIT && rightY >= STRAFING_LIMIT || leftX <= STRAFING_LIMIT && rightX <= STRAFING_LIMIT){
             //To strafe either left or right
             frontLeftDriveMotor.setPower(leftX);
             frontRightDriveMotor.setPower(leftX);
@@ -64,6 +105,11 @@ public class JDTeleop extends LinearOpMode{
         }
     }
 
+    public void setGrabber(double leftServoPosition, double rightServoPosition){
+        servoGrabberLeft.setPosition(leftServoPosition);
+        servoGrabberRight.setPosition(rightServoPosition);
+    }
+
     public double scaleInput(double dVal){
         double[] scaleArray = {0.0, 0.05, 0.09, 0.1, 0.12, 0.15, 0.18, 0.24, 0.3, 0.36, 0.43, 0.5, 0.6, 0.72, 0.85, 1.0, 1.0};
 
@@ -76,10 +122,13 @@ public class JDTeleop extends LinearOpMode{
 
         double dScale;
         if(dVal < 0){
-            dScale = -scaleArray[index]
+            dScale = -scaleArray[index];
         }
         else{
             dScale = scaleArray[index];
         }
+
+        return dScale;
+
     }
 }
