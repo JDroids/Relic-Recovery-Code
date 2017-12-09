@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.Servo;
 
 /**
@@ -12,36 +13,41 @@ import com.qualcomm.robotcore.hardware.Servo;
 @TeleOp(name="JDTeleop")
 
 public class JDTeleop extends LinearOpMode{
+
+    double STRAFING_LIMIT = 0.1;
+
+    double[] SERVO_GRABBER_INIT_POSITION = new double[]{0.5, 0.3};
+    double[] SERVO_GRABBER_CLOSE_POSITION = new double[]{0.0, 0.8};
+    double[] SERVO_GRABBER_OPEN_POSITION = new double[]{0.2, 0.6};
+    double[] SERVO_GRABBER_WIDE_OPEN_POSITION = new double[]{0.5, 0.3};
+
+
+    double JEWEL_KNOCKER_INIT_POSITION = 0;
+    double JEWEL_ARM_INIT_POSITION = 0.9;
+
+    DcMotor frontLeftDriveMotor = null;
+    DcMotor frontRightDriveMotor = null;
+    DcMotor backLeftDriveMotor = null;
+    DcMotor backRightDriveMotor = null;
+
+    DcMotor firstGlyphLift = null;
+    DcMotor secondGlyphLift = null;
+
+    Servo servoGrabberLeft = null;
+    Servo servoGrabberRight = null;
+
+    Servo jewelKnocker = null;
+    Servo jewelArm = null;
+    DigitalChannel firstLiftSwitch = null;
+    DigitalChannel secondLiftSwitch = null;
+
+    int firstLiftDirection = -1;
+    int secondLiftDirection = -1;
+
     @Override
 
     public void runOpMode() throws InterruptedException{
         //Code to run after init is pressed
-
-        double STRAFING_LIMIT = 0.1;
-
-        double[] SERVO_GRABBER_INIT_POSITION = [0.5, 0.3];
-        double[] SERVO_GRABBER_CLOSE_POSITION = [0.0, 0.8];
-        double[] SERVO_GRABBER_OPEN_POSITION = [0.2, 0.6];
-        double[] SERVO_GRABBER_WIDE_OPEN_POSITION = [0.5, 0.3];
-
-
-        double JEWEL_KNOCK_INIT_POSITION = 0;
-        double JEWEL_ARM_INIT_POSITION = 0.9;
-
-
-
-        DcMotor frontLeftDriveMotor = null;
-        DcMotor frontRightDriveMotor = null;
-        DcMotor backLeftDriveMotor = null;
-        DcMotor backRightDriveMotor = null;
-
-        DcMotor firstGlyphLift = null;
-        DcMotor secondGlyphLift = null;
-
-        Servo servoGrabberLeft = null;
-        Servo servoGrabberRight = null;
-
-        //TODO: Get hardware map setup
 
         frontLeftDriveMotor = hardwareMap.dcMotor.get("FrontLeft");
         frontRightDriveMotor = hardwareMap.dcMotor.get("FrontRight");
@@ -54,14 +60,24 @@ public class JDTeleop extends LinearOpMode{
         servoGrabberLeft = hardwareMap.servo.get("servoGrabberRight");
         servoGrabberRight = hardwareMap.servo.get("servoGrabberLeft");
 
-        waitForStart();
+        jewelKnocker = hardwareMap.servo.get("servoJewelKnock");
+        jewelArm = hardwareMap.servo.get("servoJewelArm");
 
-        setGrabber(SERVO_GRABBER_INIT_POSITION[0], SERVO_GRABBER_INIT_POSITION[1]);
+        firstLiftSwitch = hardwareMap.digitalChannel.get("FirstLiftSwitchAsDigitalChannel");
+        secondLiftSwitch = hardwareMap.digitalChannel.get("SecondLiftSwitchAsDigitalChannel");
+
+        firstLiftSwitch.setMode(DigitalChannel.Mode.INPUT);
+        secondLiftSwitch.setMode(DigitalChannel.Mode.INPUT);
 
         double gamepad1LeftY;
         double gamepad1RightY;
         double gamepad1LeftX;
         double gamepad1RightX;
+
+        waitForStart();
+        //Code to run after play is pressed
+
+        initServos();
 
         while(opModeIsActive()){
             gamepad1LeftY = scaleInput(gamepad1.left_stick_y);
@@ -81,13 +97,15 @@ public class JDTeleop extends LinearOpMode{
                 setGrabber(SERVO_GRABBER_WIDE_OPEN_POSITION[0], SERVO_GRABBER_WIDE_OPEN_POSITION[1]);
             }
 
-            //TODO: Get glyph grabber lift and closing/opening setup NOTE: SERVOS CAN'T MOVE DURING TELEOP INIT THAT IS ILLEGAL
+            firstLift();
+            secondLift();
+            //TODO: Get second lift setup
         }
 
-        //Code to run after play is pressed
+
     }
 
-    public void move(double leftY, double rightY, double leftX, double rightX){
+    public void move(double leftY, double rightY, double leftX, double rightX) throws InterruptedException{
         if(leftY >= STRAFING_LIMIT && rightY >= STRAFING_LIMIT || leftX <= STRAFING_LIMIT && rightX <= STRAFING_LIMIT){
             //To strafe either left or right
             frontLeftDriveMotor.setPower(leftX);
@@ -105,12 +123,125 @@ public class JDTeleop extends LinearOpMode{
         }
     }
 
-    public void setGrabber(double leftServoPosition, double rightServoPosition){
+    public void setGrabber(double leftServoPosition, double rightServoPosition) throws InterruptedException{
         servoGrabberLeft.setPosition(leftServoPosition);
         servoGrabberRight.setPosition(rightServoPosition);
     }
 
-    public double scaleInput(double dVal){
+    public void setJewelPosition(double jewelKnockerPosition, double jewelArmPosition){
+        jewelKnocker.setPosition(jewelKnockerPosition);
+        jewelArm.setPosition(jewelArmPosition);
+    }
+
+    public void initServos() throws InterruptedException{
+        setGrabber(SERVO_GRABBER_INIT_POSITION[0], SERVO_GRABBER_INIT_POSITION[1]);
+        setJewelPosition(JEWEL_KNOCKER_INIT_POSITION, JEWEL_ARM_INIT_POSITION);
+    }
+
+    public void firstLift() throws InterruptedException{
+        if(!firstLiftSwitch.getState() && firstLiftDirection == 1) {
+            telemetry.addData("First Lift", "Top Limit Reached - Move Down");
+            telemetry.update();
+
+            if (gamepad2.left_stick_y > 0) {
+                //Move down at a slow speed as gravity is pulling it down
+                firstGlyphLift.setPower(0.2);
+
+                //Sleep allows sensor to move away from the magnet
+                Thread.sleep(200);
+
+                firstLiftDirection = -1;
+            } else {
+                firstGlyphLift.setPower(0);
+            }
+        }
+        else if(!firstLiftSwitch.getState() && firstLiftDirection == -1){
+            telemetry.addData("First Lift", "Bottom Limit Reached - Move Down");
+            telemetry.update();
+
+            if(gamepad2.left_stick_y < 0){
+                secondGlyphLift.setPower(-0.5);
+
+                Thread.sleep(400);
+
+                firstLiftDirection = 1;
+            }
+            else{
+                secondGlyphLift.setPower(0);
+            }
+        }
+        else{
+            if(gamepad2.left_stick_y > 0){
+                //Move slow regardless of input as gravity is pulling down
+                firstGlyphLift.setPower(0.2);
+            }
+            else{
+                firstGlyphLift.setPower(scaleInput(gamepad2.left_stick_y)/1.3);
+            }
+            if(gamepad2.left_stick_y < 0){
+                firstLiftDirection = 1;
+            }
+            else if(gamepad2.left_stick_y > 0){
+                firstLiftDirection = -1;
+            }
+
+            telemetry.addData("First Lift", "Can move freely");
+            telemetry.update();
+        }
+    }
+
+    public void secondLift() throws InterruptedException{
+        if(!secondLiftSwitch.getState() && secondLiftDirection == 1) {
+            telemetry.addData("Second Lift", "Top Limit Reached - Move Down");
+            telemetry.update();
+
+            if (gamepad2.right_stick_y > 0) {
+                //Move down at a slow speed as gravity is pulling it down
+                secondGlyphLift.setPower(-0.3);
+
+                Thread.sleep(500);
+
+                secondLiftDirection = -1;
+            } else {
+                secondGlyphLift.setPower(0);
+            }
+        }
+        else if(!secondLiftSwitch.getState() && secondLiftDirection == -1){
+            telemetry.addData("Second Lift", "Bottom Limit Reached - Move Down");
+            telemetry.update();
+
+            if(gamepad2.right_stick_y < 0){
+                secondGlyphLift.setPower(0.5);
+
+                Thread.sleep(500);
+
+                secondLiftDirection = 1;
+            }
+            else{
+                secondGlyphLift.setPower(0);
+            }
+        }
+        else{
+            if(gamepad2.right_stick_y > 0){
+                //Move slow regardless of input as gravity is pulling down
+                secondGlyphLift.setPower(0.2);
+            }
+            else{
+                secondGlyphLift.setPower(scaleInput(gamepad2.right_stick_y)/1.3);
+            }
+            if(gamepad2.right_stick_y < 0){
+                secondLiftDirection = 1;
+            }
+            else if(gamepad2.right_stick_y > 0){
+                secondLiftDirection = -1;
+            }
+
+            telemetry.addData("Second Lift", "Can move freely");
+            telemetry.update();
+        }
+    }
+
+    public double scaleInput(double dVal) throws InterruptedException{
         double[] scaleArray = {0.0, 0.05, 0.09, 0.1, 0.12, 0.15, 0.18, 0.24, 0.3, 0.36, 0.43, 0.5, 0.6, 0.72, 0.85, 1.0, 1.0};
 
         int index;
@@ -131,4 +262,6 @@ public class JDTeleop extends LinearOpMode{
         return dScale;
 
     }
+
+
 }
