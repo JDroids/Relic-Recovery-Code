@@ -19,10 +19,10 @@ public class JDTeleop extends LinearOpMode{
 
         double STRAFING_LIMIT = 0.1;
 
-        double[] SERVO_GRABBER_INIT_POSITION = [double 0.5, double 0.3];
-        double[] SERVO_GRABBER_CLOSE_POSITION = [double 0.0, double 0.8];
-        double[] SERVO_GRABBER_OPEN_POSITION = [double 0.2, double 0.6];
-        double[] SERVO_GRABBER_WIDE_OPEN_POSITION = [double 0.5, double 0.3];
+        double[] SERVO_GRABBER_INIT_POSITION = [0.5, 0.3];
+        double[] SERVO_GRABBER_CLOSE_POSITION = [0.0, 0.8];
+        double[] SERVO_GRABBER_OPEN_POSITION = [0.2, 0.6];
+        double[] SERVO_GRABBER_WIDE_OPEN_POSITION = [0.5, 0.3];
 
 
         double JEWEL_KNOCK_INIT_POSITION = 0;
