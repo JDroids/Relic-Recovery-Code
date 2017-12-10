@@ -64,7 +64,7 @@ public class JDTeleop extends LinearOpMode{
         jewelArm = hardwareMap.servo.get("servoJewelArm");
 
         firstLiftSwitch = hardwareMap.digitalChannel.get("FirstLiftSwitch");
-        secondLiftSwitch = hardwareMap.digitalChannel.get("SecondLiftSwitcha");
+        secondLiftSwitch = hardwareMap.digitalChannel.get("SecondLiftSwitch");
 
         firstLiftSwitch.setMode(DigitalChannel.Mode.INPUT);
         secondLiftSwitch.setMode(DigitalChannel.Mode.INPUT);
@@ -156,7 +156,7 @@ public class JDTeleop extends LinearOpMode{
             }
         }
         else if(!firstLiftSwitch.getState() && firstLiftDirection == -1){
-            telemetry.addData("First Lift", "Bottom Limit Reached - Move Down");
+            telemetry.addData("First Lift", "Bottom Limit Reached - Move Up");
             telemetry.update();
 
             if(gamepad2.left_stick_y < 0){
