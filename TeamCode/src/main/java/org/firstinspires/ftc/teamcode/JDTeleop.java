@@ -117,8 +117,8 @@ public class JDTeleop extends LinearOpMode{
         else{
             //To move forwards/backwards/turn with tank drive controls
             frontLeftDriveMotor.setPower(leftY);
-            frontRightDriveMotor.setPower(leftY);
-            backLeftDriveMotor.setPower(-rightY);
+            frontRightDriveMotor.setPower(-rightY);
+            backLeftDriveMotor.setPower(leftY);
             backRightDriveMotor.setPower(-rightY);
         }
     }
