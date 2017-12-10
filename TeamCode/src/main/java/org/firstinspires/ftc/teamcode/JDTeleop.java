@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.hardware.Servo;
  * Created by dansm on 12/7/2017.
  */
 
-@TeleOp(name="JDTeleop")
+@TeleOp(name="JDTeleOpJava")
 
 public class JDTeleop extends LinearOpMode{
 
@@ -190,7 +190,7 @@ public class JDTeleop extends LinearOpMode{
         }
     }
 
-    public void secondLift() throws InterruptedException{
+    public void secondLift() throws InterruptedException    {
         if(!secondLiftSwitch.getState() && secondLiftDirection == 1) {
             telemetry.addData("Second Lift", "Top Limit Reached - Move Down");
             telemetry.update();
