@@ -99,7 +99,6 @@ public class JDTeleop extends LinearOpMode{
 
             firstLift();
             secondLift();
-            //TODO: Get second lift setup
         }
 
 
@@ -109,7 +108,7 @@ public class JDTeleop extends LinearOpMode{
         if(leftX >= STRAFING_LIMIT && rightX >= STRAFING_LIMIT || leftX <= -STRAFING_LIMIT && rightX <= -STRAFING_LIMIT){
             //To strafe either left or right
             frontLeftDriveMotor.setPower(-leftX);
-            frontRightDriveMotor.setPower-(leftX);
+            frontRightDriveMotor.setPower(-leftX);
             backLeftDriveMotor.setPower(leftX);
             backRightDriveMotor.setPower(leftX);
         }
@@ -176,7 +175,7 @@ public class JDTeleop extends LinearOpMode{
                 firstGlyphLift.setPower(0.2);
             }
             else{
-                firstGlyphLift.setPower(scaleInput(gamepad2.left_stick_y)/1.3);
+                firstGlyphLift.setPower(scaleInput(gamepad2.left_stick_y));
             }
             if(gamepad2.left_stick_y < 0){
                 firstLiftDirection = 1;
@@ -227,7 +226,7 @@ public class JDTeleop extends LinearOpMode{
                 secondGlyphLift.setPower(0.2);
             }
             else{
-                secondGlyphLift.setPower(scaleInput(gamepad2.right_stick_y)/1.3);
+                secondGlyphLift.setPower(gamepad2.right_stick_y/2);
             }
             if(gamepad2.right_stick_y < 0){
                 secondLiftDirection = 1;
@@ -242,7 +241,7 @@ public class JDTeleop extends LinearOpMode{
     }
 
     public double scaleInput(double dVal) throws InterruptedException{
-        double[] scaleArray = {0.0, 0.05, 0.09, 0.1, 0.12, 0.15, 0.18, 0.24, 0.3, 0.36, 0.43, 0.5, 0.6, 0.72, 0.85, 1.0, 1.0};
+        double[] scaleArray = {0.0, 0.05, 0.09, 0.1, 0.12, 0.15, 0.18, 0.24, 0.3, 0.36, 0.43, 0.5, 0.6, 0.72, 0.85, 0.9, 0.9    };
 
         int index;
         index = (int) (dVal * 16);
