@@ -63,8 +63,8 @@ public class JDTeleop extends LinearOpMode{
         jewelKnocker = hardwareMap.servo.get("servoJewelKnock");
         jewelArm = hardwareMap.servo.get("servoJewelArm");
 
-        firstLiftSwitch = hardwareMap.digitalChannel.get("FirstLiftSwitchAsDigitalChannel");
-        secondLiftSwitch = hardwareMap.digitalChannel.get("SecondLiftSwitchAsDigitalChannel");
+        firstLiftSwitch = hardwareMap.digitalChannel.get("FirstLiftSwitch");
+        secondLiftSwitch = hardwareMap.digitalChannel.get("SecondLiftSwitcha");
 
         firstLiftSwitch.setMode(DigitalChannel.Mode.INPUT);
         secondLiftSwitch.setMode(DigitalChannel.Mode.INPUT);
