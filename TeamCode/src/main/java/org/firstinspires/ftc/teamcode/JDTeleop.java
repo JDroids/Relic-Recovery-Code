@@ -106,7 +106,7 @@ public class JDTeleop extends LinearOpMode{
     }
 
     public void move(double leftY, double rightY, double leftX, double rightX) throws InterruptedException{
-        if(leftY >= STRAFING_LIMIT && rightY >= STRAFING_LIMIT || leftX <= STRAFING_LIMIT && rightX <= STRAFING_LIMIT){
+        if(leftX >= STRAFING_LIMIT && rightX >= STRAFING_LIMIT || leftX <= -STRAFING_LIMIT && rightX <= -STRAFING_LIMIT){
             //To strafe either left or right
             frontLeftDriveMotor.setPower(leftX);
             frontRightDriveMotor.setPower(leftX);
