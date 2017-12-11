@@ -2,45 +2,17 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
-import com.qualcomm.robotcore.hardware.Servo;
+
+import static org.firstinspires.ftc.teamcode.robot.*;
 
 /**
  * Created by dansm on 12/7/2017.
  */
 
-@TeleOp(name="JDTeleOpJava")
+@TeleOp(name="JDTeleOpJavaUsingRobot")
 
-public class JDTeleop extends LinearOpMode{
-
-    double STRAFING_LIMIT = 0.1;
-
-    double[] SERVO_GRABBER_INIT_POSITION = new double[]{0.5, 0.3};
-    double[] SERVO_GRABBER_CLOSE_POSITION = new double[]{0.0, 0.8};
-    double[] SERVO_GRABBER_OPEN_POSITION = new double[]{0.2, 0.6};
-    double[] SERVO_GRABBER_WIDE_OPEN_POSITION = new double[]{0.5, 0.3};
-
-
-    double JEWEL_KNOCKER_INIT_POSITION = 0;
-    double JEWEL_ARM_INIT_POSITION = 0.9;
-
-    DcMotor frontLeftDriveMotor = null;
-    DcMotor frontRightDriveMotor = null;
-    DcMotor backLeftDriveMotor = null;
-    DcMotor backRightDriveMotor = null;
-
-    DcMotor firstGlyphLift = null;
-    DcMotor secondGlyphLift = null;
-
-    Servo servoGrabberLeft = null;
-    Servo servoGrabberRight = null;
-
-    Servo jewelKnocker = null;
-    Servo jewelArm = null;
-    DigitalChannel firstLiftSwitch = null;
-    DigitalChannel secondLiftSwitch = null;
-
+public class JDTeleopUsingRobot extends LinearOpMode{
     int firstLiftDirection = -1;
     int secondLiftDirection = -1;
 
@@ -48,26 +20,6 @@ public class JDTeleop extends LinearOpMode{
 
     public void runOpMode() throws InterruptedException{
         //Code to run after init is pressed
-
-        frontLeftDriveMotor = hardwareMap.dcMotor.get("FrontLeft");
-        frontRightDriveMotor = hardwareMap.dcMotor.get("FrontRight");
-        backLeftDriveMotor = hardwareMap.dcMotor.get("BackLeft");
-        backRightDriveMotor = hardwareMap.dcMotor.get("BackRight");
-
-        firstGlyphLift = hardwareMap.dcMotor.get("MotorGlyphLift");
-        secondGlyphLift = hardwareMap.dcMotor.get("MotorGlyphLift2");
-
-        servoGrabberLeft = hardwareMap.servo.get("servoGrabberRight");
-        servoGrabberRight = hardwareMap.servo.get("servoGrabberLeft");
-
-        jewelKnocker = hardwareMap.servo.get("servoJewelKnock");
-        jewelArm = hardwareMap.servo.get("servoJewelArm");
-
-        firstLiftSwitch = hardwareMap.digitalChannel.get("FirstLiftSwitch");
-        secondLiftSwitch = hardwareMap.digitalChannel.get("SecondLiftSwitch");
-
-        firstLiftSwitch.setMode(DigitalChannel.Mode.INPUT);
-        secondLiftSwitch.setMode(DigitalChannel.Mode.INPUT);
 
         double gamepad1LeftY;
         double gamepad1RightY;
@@ -78,6 +30,9 @@ public class JDTeleop extends LinearOpMode{
         //Code to run after play is pressed
 
         initServos();
+
+        firstLiftSwitch.setMode(DigitalChannel.Mode.Input);
+        secondLiftSwitch.setMode(DigitalChannel.Mode.Input);
 
         while(opModeIsActive()){
             gamepad1LeftY = scaleInput(gamepad1.left_stick_y);
@@ -132,10 +87,7 @@ public class JDTeleop extends LinearOpMode{
         jewelArm.setPosition(jewelArmPosition);
     }
 
-    public void initServos() throws InterruptedException{
-        setGrabber(SERVO_GRABBER_INIT_POSITION[0], SERVO_GRABBER_INIT_POSITION[1]);
-        setJewelPosition(JEWEL_KNOCKER_INIT_POSITION, JEWEL_ARM_INIT_POSITION);
-    }
+
 
     public void firstLift() throws InterruptedException{
         if(!firstLiftSwitch.getState() && firstLiftDirection == 1) {
@@ -239,17 +191,4 @@ public class JDTeleop extends LinearOpMode{
             telemetry.update();
         }
     }
-
-    public double scaleInput(double dVal) throws InterruptedException{
-        double result = Math.pow(dVal, 3);
-        if(result > 0.7){
-            result = 0.7;
-        }
-        else if(result < -0.7){
-            result = -0.7;
-        }
-        return result;
-    }
-
-
 }
