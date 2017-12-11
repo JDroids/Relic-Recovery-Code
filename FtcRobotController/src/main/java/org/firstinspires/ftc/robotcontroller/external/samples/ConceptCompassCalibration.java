@@ -37,7 +37,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**
  * This file illustrates the concept of calibrating a MR Compass
- * It uses the common Pushbot hardware class to define the drive on the robot.
+ * It uses the common Pushbot hardware class to define the drive on the
  * The code is structured as a LinearOpMode
  *
  *   This code assumes there is a compass configured with the name "compass"
@@ -52,26 +52,29 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
+
+
+/*
 @Autonomous(name="Concept: Compass Calibration", group="Concept")
 @Disabled
 public class ConceptCompassCalibration extends LinearOpMode {
 
     /* Declare OpMode members. */
-    HardwarePushbot     robot   = new HardwarePushbot();   // Use a Pushbot's hardware
-    private ElapsedTime runtime = new ElapsedTime();
-    CompassSensor       compass;
+    //HardwarePushbot     robot   = new HardwarePushbot();   // Use a Pushbot's hardware
+    //private ElapsedTime runtime = new ElapsedTime();
+    //CompassSensor       compass;
 
-    final static double     MOTOR_POWER   = 0.2; // scale from 0 to 1
-    static final long       HOLD_TIME_MS  = 3000;
-    static final double     CAL_TIME_SEC  = 20;
+    //final static double     MOTOR_POWER   = 0.2; // scale from 0 to 1
+    //static final long       HOLD_TIME_MS  = 3000;
+    //static final double     CAL_TIME_SEC  = 20;
 
-    @Override
+    /*@Override
     public void runOpMode() {
 
         /* Initialize the drive system variables.
          * The init() method of the hardware class does all the work here
          */
-        robot.init(hardwareMap);
+        /*init(hardwareMap);
 
         // get a reference to our Compass Sensor object.
         compass = hardwareMap.get(CompassSensor.class, "compass");
@@ -91,10 +94,10 @@ public class ConceptCompassCalibration extends LinearOpMode {
         sleep(HOLD_TIME_MS);  // Just do a sleep while we switch modes
 
         // Start the robot rotating clockwise
-        telemetry.addData("Compass", "Calibration mode. Turning the robot...");
+        telemetry.addData("Compass", "Calibration mode. Turning the ..");
         telemetry.update();
-        robot.leftDrive.setPower(MOTOR_POWER);
-        robot.rightDrive.setPower(-MOTOR_POWER);
+        leftDrive.setPower(MOTOR_POWER);
+        rightDrive.setPower(-MOTOR_POWER);
 
         // run until time expires OR the driver presses STOP;
         runtime.reset();
@@ -103,8 +106,8 @@ public class ConceptCompassCalibration extends LinearOpMode {
         }
 
         // Stop all motors and turn off claibration
-        robot.leftDrive.setPower(0);
-        robot.rightDrive.setPower(0);
+        leftDrive.setPower(0);
+        rightDrive.setPower(0);
         compass.setMode(CompassSensor.CompassMode.MEASUREMENT_MODE);
         telemetry.addData("Compass", "Returning to measurement mode");
         telemetry.update();
@@ -119,3 +122,5 @@ public class ConceptCompassCalibration extends LinearOpMode {
         telemetry.update();
     }
 }
+
+*/
