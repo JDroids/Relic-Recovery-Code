@@ -2,9 +2,10 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DigitalChannel;
 
-import static org.firstinspires.ftc.teamcode.robot.*;
+
+import static org.firstinspires.ftc.teamcode.hardware.*;
+import static org.firstinspires.ftc.teamcode.functions.*;
 
 /**
  * Created by dansm on 12/7/2017.
@@ -21,7 +22,9 @@ public class JDTeleopUsingRobot extends LinearOpMode{
     public void runOpMode() throws InterruptedException{
         //Code to run after init is pressed
         boolean hardwareMapState;
-        //hardwareMapState = initHardwareMap(hardwareMap);
+
+        hardwareMapState = initHardwareMap(hardwareMap);
+
         if(!hardwareMapState){
             return;
         }
@@ -51,7 +54,7 @@ public class JDTeleopUsingRobot extends LinearOpMode{
                 openGrabber();
             }
             else if(gamepad2.y){
-                wideOpenGrabber();
+                openGrabberWide();
             }
 
             firstLiftDirection = firstLift(firstLiftDirection);
