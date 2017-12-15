@@ -1,11 +1,13 @@
 package org.firstinspires.ftc.teamcode;
 
+import static org.firstinspires.ftc.teamcode.hardware.*;
+import static org.firstinspires.ftc.teamcode.functions.*;
+
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 
-import static org.firstinspires.ftc.teamcode.hardware.*;
-import static org.firstinspires.ftc.teamcode.functions.*;
+
 
 /**
  * Created by dansm on 12/7/2017.
@@ -14,8 +16,8 @@ import static org.firstinspires.ftc.teamcode.functions.*;
 @TeleOp(name="JDTeleOpJavaUsingRobot")
 
 public class JDTeleopUsingRobot extends LinearOpMode{
-    int firstLiftDirection = -1;
-    int secondLiftDirection = -1;
+    public int firstLiftDirection = -1;
+    public int secondLiftDirection = -1;
 
     @Override
 
@@ -57,8 +59,8 @@ public class JDTeleopUsingRobot extends LinearOpMode{
                 openGrabberWide();
             }
 
-            firstLiftDirection = firstLift(firstLiftDirection);
-            secondLiftDirection = secondLift(secondLiftDirection);
+            firstLift(firstLiftDirection, gamepad2);
+            secondLift(secondLiftDirection, gamepad2);
         }
     }
 }

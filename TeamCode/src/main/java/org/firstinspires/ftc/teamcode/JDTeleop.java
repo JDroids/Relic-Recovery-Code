@@ -175,7 +175,7 @@ public class JDTeleop extends LinearOpMode{
                 firstGlyphLift.setPower(0.2);
             }
             else{
-                firstGlyphLift.setPower(scaleInput(gamepad2.left_stick_y));
+                firstGlyphLift.setPower(gamepad2.left_stick_y);
             }
             if(gamepad2.left_stick_y < 0){
                 firstLiftDirection = 1;

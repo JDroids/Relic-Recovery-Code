@@ -1,11 +1,17 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.hardware.Gamepad;
+
 import static org.firstinspires.ftc.teamcode.constants.*;
 import static org.firstinspires.ftc.teamcode.hardware.*;
+import org.firstinspires.ftc.teamcode.JDTeleopUsingRobot.*
+
 
 /**
  * Created by dansm on 12/13/2017.
  */
+
+
 
 public class functions{
     static public double scaleInput(double dVal) throws InterruptedException {
@@ -62,12 +68,13 @@ public class functions{
             backLeftDriveMotor.setPower(leftY);
             backRightDriveMotor.setPower(-rightY);
         }
+
     }
 
-    static public int firstLift(int liftDirection) throws InterruptedException{
-        if(!firstLiftSwitch.getState() && liftDirection == 1){
-            telemetry.addData("First Lift", "Top Limit Reached - Move Down");
-            telemetry.update();
+    static public void firstLift(Gamepad gamepad2) throws InterruptedException{
+        if(!firstLiftSwitch.getState() && JDTeleopUsingRobot.this.firstLiftDirection == 1){
+            ////telemetry.addData("First Lift", "Top Limit Reached - Move Down");
+            ////telemetry.update();
 
             if (gamepad2.left_stick_y > 0) {
                 //Move down at a slow speed as gravity is pulling it down
@@ -75,22 +82,21 @@ public class functions{
 
                 //Sleep allows sensor to move away from the magnet
                 Thread.sleep(200);
-
-                return -1;
-            } else {
+            }
+            else {
                 firstGlyphLift.setPower(0);
             }
         }
-        else if(!firstLiftSwitch.getState() && liftDirection == -1){
-            telemetry.addData("First Lift", "Bottom Limit Reached - Move Up");
-            telemetry.update();
+        else if(!firstLiftSwitch.getState() && JDTeleopUsingRobot.this.firstLiftDirection == -1){
+            ////telemetry.addData("First Lift", "Bottom Limit Reached - Move Up");
+            ////telemetry.update();
 
             if(gamepad2.left_stick_y < 0){
                 secondGlyphLift.setPower(-0.5);
 
                 Thread.sleep(400);
 
-                return 1;
+                JDTeleopUsingRobot.this.firstLiftDirection = 1;
             }
             else{
                 secondGlyphLift.setPower(0);
@@ -105,21 +111,21 @@ public class functions{
                 firstGlyphLift.setPower(scaleInput(gamepad2.left_stick_y));
             }
             if(gamepad2.left_stick_y < 0){
-                return 1;
+                JDTeleopUsingRobot.this.firstLiftDirection = 1;
             }
             else if(gamepad2.left_stick_y > 0){
-                return -1;
+                JDTeleopUsingRobot.this.firstLiftDirection = -1;
             }
 
-            telemetry.addData("First Lift", "Can move freely");
-            telemetry.update();
+            ////telemetry.addData("First Lift", "Can move freely");
+            ////telemetry.update();
         }
     }
 
-    static public int secondLift() throws InterruptedException{
-        if(!secondLiftSwitch.getState() && liftDirection == 1) {
-            telemetry.addData("Second Lift", "Top Limit Reached - Move Down");
-            telemetry.update();
+    static public void secondLift(int JDTeleopUsingRobot.this.firstLiftDirection, Gamepad gamepad2) throws InterruptedException{
+        if(!secondLiftSwitch.getState() && JDTeleopUsingRobot.this.firstLiftDirection == 1) {
+            //telemetry.addData("Second Lift", "Top Limit Reached - Move Down");
+            //telemetry.update();
 
             if (gamepad2.right_stick_y > 0) {
                 //Move down at a slow speed as gravity is pulling it down
@@ -127,21 +133,21 @@ public class functions{
 
                 Thread.sleep(500);
 
-                return -1;
+                JDTeleopUsingRobot.this.firstLiftDirection = -1;
             } else {
                 secondGlyphLift.setPower(0);
             }
         }
-        else if(!secondLiftSwitch.getState() && liftDirection == -1){
-            telemetry.addData("Second Lift", "Bottom Limit Reached - Move Down");
-            telemetry.update();
+        else if(!secondLiftSwitch.getState() && JDTeleopUsingRobot.this.firstLiftDirection == -1){
+            //telemetry.addData("Second Lift", "Bottom Limit Reached - Move Down");
+            //telemetry.update();
 
             if(gamepad2.right_stick_y < 0){
                 secondGlyphLift.setPower(0.5);
 
                 Thread.sleep(500);
 
-                return 1;
+                JDTeleopUsingRobot.this.firstLiftDirection = 1;
             }
             else{
                 secondGlyphLift.setPower(0);
@@ -156,14 +162,14 @@ public class functions{
                 secondGlyphLift.setPower(gamepad2.right_stick_y/2);
             }
             if(gamepad2.right_stick_y < 0){
-                return 1;
+                JDTeleopUsingRobot.this.firstLiftDirection = 1;
             }
             else if(gamepad2.right_stick_y > 0){
-                return -1;
+                JDTeleopUsingRobot.this.firstLiftDirection = -1;
             }
 
-            telemetry.addData("Second Lift", "Can move freely");
-            telemetry.update();
+            //telemetry.addData("Second Lift", "Can move freely");
+            //telemetry.update();
         }
     }
 }
