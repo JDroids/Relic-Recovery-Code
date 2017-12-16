@@ -71,8 +71,7 @@ public class functions{
 
     static public void firstLift(Gamepad gamepad2) throws InterruptedException{
         if(!firstLiftSwitch.getState() && getLiftDirection(1) == 1){
-            //telemetry.addData("First Lift", "Top Limit Reached - Move Down");
-            //telemetry.update();
+            addTelemetry("First Lift", "Top Limit Reached - Move Down", true);
 
             if (gamepad2.left_stick_y > 0) {
                 //Move down at a slow speed as gravity is pulling it down
@@ -86,8 +85,7 @@ public class functions{
             }
         }
         else if(!firstLiftSwitch.getState() && getLiftDirection(1) == -1){
-            ////telemetry.addData("First Lift", "Bottom Limit Reached - Move Up");
-            ////telemetry.update();
+            addTelemetry("First Lift", "Bottom Limit Reached - Move Up", true);
 
             if(gamepad2.left_stick_y < 0){
                 secondGlyphLift.setPower(-0.5);
@@ -115,15 +113,13 @@ public class functions{
                 setLiftDirection(1, 1);
             }
 
-            //telemetry.addData("First Lift", "Can move freely");
-            //telemetry.update();
+            addTelemetry("First Lift", "Can move freely", true);
         }
     }
 
     static public void secondLift(Gamepad gamepad2) throws InterruptedException{
         if(!secondLiftSwitch.getState() && getLiftDirection(2) == 1) {
-            //telemetry.addData("Second Lift", "Top Limit Reached - Move Down");
-            //telemetry.update();
+            addTelemetry("Second Lift", "Top Limit Reached - Move Down", true);
 
             if (gamepad2.right_stick_y > 0) {
                 //Move down at a slow speed as gravity is pulling it down
@@ -137,8 +133,7 @@ public class functions{
             }
         }
         else if(!secondLiftSwitch.getState() && getLiftDirection(2) == -1){
-            //telemetry.addData("Second Lift", "Bottom Limit Reached - Move Down");
-            //telemetry.update();
+            addTelemetry("Second Lift", "Bottom Limit Reached - Move Down", true);
 
             if(gamepad2.right_stick_y < 0){
                 secondGlyphLift.setPower(0.5);
@@ -166,8 +161,7 @@ public class functions{
                 getLiftDirection(1);
             }
 
-            //telemetry.addData("Second Lift", "Can move freely");
-            //telemetry.update();
+            addTelemetry("Second Lift", "Can move freely", true);
         }
     }
 }

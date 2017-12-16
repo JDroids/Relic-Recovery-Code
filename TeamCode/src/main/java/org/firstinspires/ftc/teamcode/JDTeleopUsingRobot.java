@@ -41,10 +41,18 @@ public class JDTeleopUsingRobot extends LinearOpMode{
         }
     }
 
+   static public void addTelemetry(String caption, String telemetryValue, boolean update){
+        telemetry.addData(caption, telemetryValue);
+        if(update){
+            telemetry.update();
+        }
+    }
+
     @Override
 
     public void runOpMode() throws InterruptedException{
         //Code to run after init is pressed
+        telemetry.addData();
         boolean hardwareMapState;
 
         hardwareMapState = initHardwareMap(hardwareMap);

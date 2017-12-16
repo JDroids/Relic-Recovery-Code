@@ -54,9 +54,11 @@ public class JDAuto extends LinearOpMode{
         jewelKnocker = hardwareMap.servo.get("servoJewelKnock");
         jewelArm = hardwareMap.servo.get("servoJewelArm");
 
-        JewelColor = hardwareMap.dcMotor.get("jewelColorFound");
-        StoneColor = hardwareMap.dcMotor.get("stoneFound");
+        //JewelColor = hardwareMap.dcMotor.get("jewelColorFound");
+        //StoneColor = hardwareMap.dcMotor.get("stoneFound");
 
+        int jewelColorFound = 100; //Remove these lines, this is so the whole project compiles
+        int stoneFound = 100;
 
         JEWEL_KNOCKER_INIT_POSITION = 0.5;
         Thread.sleep(200);
@@ -66,14 +68,15 @@ public class JDAuto extends LinearOpMode{
         while(opModeIsActive()) {
 
             waitForStart();
-            if jewelColorFound = 0;
-            //do nothing
-            if jewelColorFound = stoneFound;
-            if jewelColorFound != stoneFound;
-
-
-
-
+            if(jewelColorFound == 0){
+                //do nothing
+            }
+            if(jewelColorFound == stoneFound){
+                //do something here
+            }
+            if(jewelColorFound != stoneFound){
+                //do something here
+            }
         }
     }
 }
