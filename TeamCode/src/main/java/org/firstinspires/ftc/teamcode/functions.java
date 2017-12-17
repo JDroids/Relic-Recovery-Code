@@ -1,6 +1,9 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.disnodeteam.dogecv.CameraViewDisplay;
+import com.disnodeteam.dogecv.detectors.CryptoboxDetector;
 import com.qualcomm.robotcore.hardware.Gamepad;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 
 import static org.firstinspires.ftc.teamcode.constants.*;
 import static org.firstinspires.ftc.teamcode.hardware.*;
@@ -71,7 +74,7 @@ public class functions{
 
     static public void firstLift(Gamepad gamepad2) throws InterruptedException{
         JDTeleopUsingRobot runningOpMode = new JDTeleopUsingRobot();
-        
+
         if(!firstLiftSwitch.getState() && getLiftDirection(1) == 1){
             runningOpMode.addTelemetry("First Lift", "Top Limit Reached - Move Down", true);
 
@@ -167,5 +170,17 @@ public class functions{
 
             runningOpMode.addTelemetry("Second Lift", "Can move freely", true);
         }
+    }
+
+    static public void initDogeCV(HardwareMap hMap){
+        CryptoboxDetector cryptoboxDetector = new CryptoboxDetector();
+        cryptoboxDetector.init(hMap.appContext, CameraViewDisplay.getInstance());
+
+        cryptoboxDetector.downScaleFactor = 0.4;
+        cryptoboxDetector.detectionMode = CryptoboxDetector.CryptoboxDetectionMode.HSV_RED; // Also HSV_BLUE for blue
+        cryptoboxDetector.speed = CryptoboxDetector.CryptoboxSpeed.BALANCED;
+        cryptoboxDetector.rotateMat = true;
+
+        cryptoboxDetector.enable();
     }
 }
