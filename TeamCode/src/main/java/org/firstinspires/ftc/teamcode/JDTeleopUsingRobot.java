@@ -16,8 +16,37 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 @TeleOp(name="JDTeleOpJavaUsingRobot")
 
 public class JDTeleopUsingRobot extends LinearOpMode{
-    public int firstLiftDirection = -1;
-    public int secondLiftDirection = -1;
+    static public int firstLiftDirection = -1;
+    static public int secondLiftDirection = -1;
+
+    static public int getLiftDirection(int lift){
+        if(lift == 1){
+            return firstLiftDirection;
+        }
+        else if(lift == 2){
+            return secondLiftDirection;
+        }
+        else{
+            //Should not be called EVER if coded properly
+            return 0;
+        }
+    }
+
+    static public void setLiftDirection(int lift, int value){
+        if(lift == 1){
+            firstLiftDirection = value;
+        }
+        else if(lift == 2){
+            secondLiftDirection = value;
+        }
+    }
+
+   public void addTelemetry(String caption, String telemetryValue, boolean update){
+        telemetry.addData(caption, telemetryValue);
+        if(update){
+            telemetry.update();
+        }
+    }
 
     @Override
 
@@ -59,8 +88,8 @@ public class JDTeleopUsingRobot extends LinearOpMode{
                 openGrabberWide();
             }
 
-            firstLift(firstLiftDirection, gamepad2);
-            secondLift(secondLiftDirection, gamepad2);
+            firstLift(gamepad2);
+            secondLift(gamepad2);
         }
     }
 }
