@@ -5,7 +5,6 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.ColorSensor;
 
 
 /**
@@ -21,6 +20,9 @@ public class JDAuto extends LinearOpMode{
     double JEWEL_KNOCKER_INIT_POSITION = 0;
     double JEWEL_ARM_INIT_POSITION = 0.9;
 
+    ColorSensor JewelColor = null;
+    ColorSensor StoneColor = null;
+
     DcMotor frontLeftDriveMotor = null;
     DcMotor frontRightDriveMotor = null;
     DcMotor backLeftDriveMotor = null;
@@ -34,13 +36,15 @@ public class JDAuto extends LinearOpMode{
     Servo jewelKnocker = null;
     Servo jewelArm = null;
 
-    ColorSensor JewelColor = null;
-    ColorSensor StoneColor = null;
 
 
     @Override
 
     public void runOpMode() throws InterruptedException {
+
+        JewelColor = hardwareMap.colorSensor.get("jewelColorFound");
+        StoneColor = hardwareMap.colorSensor.get("stoneFound");
+
         frontLeftDriveMotor = hardwareMap.dcMotor.get("FrontLeft");
         frontRightDriveMotor = hardwareMap.dcMotor.get("FrontRight");
         backLeftDriveMotor = hardwareMap.dcMotor.get("BackLeft");
@@ -54,25 +58,21 @@ public class JDAuto extends LinearOpMode{
         jewelKnocker = hardwareMap.servo.get("servoJewelKnock");
         jewelArm = hardwareMap.servo.get("servoJewelArm");
 
-        JewelColor = hardwareMap.dcMotor.get("jewelColorFound");
-        StoneColor = hardwareMap.dcMotor.get("stoneFound");
-
-
         JEWEL_KNOCKER_INIT_POSITION = 0.5;
         Thread.sleep(200);
         JEWEL_ARM_INIT_POSITION = 0.05;
         Thread.sleep(200);
 
-        while(opModeIsActive()) {
+        while(opModeIsActive()){
 
             waitForStart();
-            if jewelColorFound = 0;
-            //do nothing
-            if jewelColorFound = stoneFound;
-            if jewelColorFound != stoneFound;
 
-
-
+            if JewelColor = 0;
+            //Do nothing
+            if JewelColor = StoneColor;
+            //Knock Opposite
+            if JewelColor != StoneColor;
+            //Knock Same
 
         }
     }
