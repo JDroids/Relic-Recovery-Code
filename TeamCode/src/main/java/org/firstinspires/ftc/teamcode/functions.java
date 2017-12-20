@@ -15,6 +15,7 @@ import static org.firstinspires.ftc.teamcode.JDTeleopUsingRobot.*;
 
 
 public class functions{
+
     static public double scaleInput(double dVal) throws InterruptedException {
         double result = Math.pow(dVal, 3);
         if (result > 0.7) {
@@ -75,32 +76,31 @@ public class functions{
     static public void firstLift(Gamepad gamepad2) throws InterruptedException{
         JDTeleopUsingRobot runningOpMode = new JDTeleopUsingRobot();
 
-        if(!firstLiftSwitch.getState() && getLiftDirection(1) == 1){
+        if(!firstLiftSwitch.getState() && getLiftDirection(FIRST_LIFT) == UP){
             runningOpMode.addTelemetry("First Lift", "Top Limit Reached - Move Down", true);
 
             if (gamepad2.left_stick_y > 0) {
                 //Move down at a slow speed as gravity is pulling it down
                 firstGlyphLift.setPower(0.2);
-
                 //Sleep allows sensor to move away from the magnet
                 Thread.sleep(200);
             }
             else {
+                //Don't allow to move up any further
                 firstGlyphLift.setPower(0);
             }
         }
-        else if(!firstLiftSwitch.getState() && getLiftDirection(1) == -1){
+        else if(!firstLiftSwitch.getState() && getLiftDirection(FIRST_LIFT) == DOWN){
             runningOpMode.addTelemetry("First Lift", "Bottom Limit Reached - Move Up", true);
 
             if(gamepad2.left_stick_y < 0){
-                secondGlyphLift.setPower(-0.5);
-
+                firstGlyphLift.setPower(-0.5);
                 Thread.sleep(400);
-
-                setLiftDirection(1, 1);
+                setLiftDirection(FIRST_LIFT, UP);
             }
             else{
-                secondGlyphLift.setPower(0);
+                //Don't allow to move down any further
+                firstGlyphLift.setPower(0);
             }
         }
         else{
@@ -112,10 +112,10 @@ public class functions{
                 firstGlyphLift.setPower(scaleInput(gamepad2.left_stick_y));
             }
             if(gamepad2.left_stick_y < 0){
-                setLiftDirection(1, 1);
+                setLiftDirection(FIRST_LIFT, UP);
             }
             else if(gamepad2.left_stick_y > 0){
-                setLiftDirection(1, 1);
+                setLiftDirection(FIRST_LIFT, DOWN);
             }
 
             runningOpMode.addTelemetry("First Lift", "Can move freely", true);
@@ -125,7 +125,7 @@ public class functions{
     static public void secondLift(Gamepad gamepad2) throws InterruptedException{
         JDTeleopUsingRobot runningOpMode = new JDTeleopUsingRobot();
 
-        if(!secondLiftSwitch.getState() && getLiftDirection(2) == 1) {
+        if(!secondLiftSwitch.getState() && getLiftDirection(SECOND_LIFT) == UP) {
             runningOpMode.addTelemetry("Second Lift", "Top Limit Reached - Move Down", true);
 
             if (gamepad2.right_stick_y > 0) {
@@ -134,20 +134,19 @@ public class functions{
 
                 Thread.sleep(500);
 
-                setLiftDirection(2, -1);
-            } else {
+                setLiftDirection(SECOND_LIFT, DOWN);
+            }
+            else {
                 secondGlyphLift.setPower(0);
             }
         }
-        else if(!secondLiftSwitch.getState() && getLiftDirection(2) == -1){
+        else if(!secondLiftSwitch.getState() && getLiftDirection(SECOND_LIFT) == DOWN){
             runningOpMode.addTelemetry("Second Lift", "Bottom Limit Reached - Move Down", true);
 
             if(gamepad2.right_stick_y < 0){
                 secondGlyphLift.setPower(0.5);
-
                 Thread.sleep(500);
-
-                setLiftDirection(1, 1);
+                setLiftDirection(SECOND_LIFT, UP);
             }
             else{
                 secondGlyphLift.setPower(0);
@@ -162,10 +161,10 @@ public class functions{
                 secondGlyphLift.setPower(gamepad2.right_stick_y/2);
             }
             if(gamepad2.right_stick_y < 0){
-                getLiftDirection(1);
+                setLiftDirection(SECOND_LIFT,UP);
             }
             else if(gamepad2.right_stick_y > 0){
-                getLiftDirection(1);
+                setLiftDirection(SECOND_LIFT,DOWN);
             }
 
             runningOpMode.addTelemetry("Second Lift", "Can move freely", true);
