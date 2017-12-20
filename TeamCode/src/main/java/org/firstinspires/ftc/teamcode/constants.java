@@ -16,4 +16,9 @@ public class constants{
 
     static double JEWEL_KNOCKER_INIT_POSITION = 0;
     static double JEWEL_ARM_INIT_POSITION = 0.9;
+
+    static int FIRST_LIFT = 1;
+    static int SECOND_LIFT = 2;
+    static int UP = 1;
+    static int DOWN = -1;
 }
