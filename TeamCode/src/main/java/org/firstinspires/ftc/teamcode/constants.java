@@ -21,4 +21,5 @@ public class constants{
     static int SECOND_LIFT = 2;
     static int UP = 1;
     static int DOWN = -1;
+
 }
