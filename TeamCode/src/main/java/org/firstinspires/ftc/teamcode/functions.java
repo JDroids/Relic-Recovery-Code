@@ -1,13 +1,46 @@
 package org.firstinspires.ftc.teamcode;
 
+import android.graphics.Color;
+
 import com.disnodeteam.dogecv.CameraViewDisplay;
 import com.disnodeteam.dogecv.detectors.CryptoboxDetector;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
-import static org.firstinspires.ftc.teamcode.constants.*;
-import static org.firstinspires.ftc.teamcode.hardware.*;
-import static org.firstinspires.ftc.teamcode.JDTeleopUsingRobot.*;
+import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
+
+import static org.firstinspires.ftc.teamcode.JDTeleopUsingRobot.getLiftDirection;
+import static org.firstinspires.ftc.teamcode.JDTeleopUsingRobot.setLiftDirection;
+import static org.firstinspires.ftc.teamcode.constants.DOWN;
+import static org.firstinspires.ftc.teamcode.constants.FIRST_LIFT;
+import static org.firstinspires.ftc.teamcode.constants.JEWEL_ARM_INIT_POSITION;
+import static org.firstinspires.ftc.teamcode.constants.JEWEL_KNOCKER_INIT_POSITION;
+import static org.firstinspires.ftc.teamcode.constants.SECOND_LIFT;
+import static org.firstinspires.ftc.teamcode.constants.SERVO_GRABBER_CLOSE_POSITION;
+import static org.firstinspires.ftc.teamcode.constants.SERVO_GRABBER_INIT_POSITION;
+import static org.firstinspires.ftc.teamcode.constants.SERVO_GRABBER_OPEN_POSITION;
+import static org.firstinspires.ftc.teamcode.constants.SERVO_GRABBER_WIDE_OPEN_POSITION;
+import static org.firstinspires.ftc.teamcode.constants.STRAFING_LIMIT;
+import static org.firstinspires.ftc.teamcode.constants.UP;
+import static org.firstinspires.ftc.teamcode.hardware.backLeftDriveMotor;
+import static org.firstinspires.ftc.teamcode.hardware.backRightDriveMotor;
+import static org.firstinspires.ftc.teamcode.hardware.firstGlyphLift;
+import static org.firstinspires.ftc.teamcode.hardware.firstLiftSwitch;
+import static org.firstinspires.ftc.teamcode.hardware.frontLeftDriveMotor;
+import static org.firstinspires.ftc.teamcode.hardware.frontRightDriveMotor;
+import static org.firstinspires.ftc.teamcode.hardware.jewelArm;
+import static org.firstinspires.ftc.teamcode.hardware.jewelKnocker;
+import static org.firstinspires.ftc.teamcode.hardware.secondGlyphLift;
+import static org.firstinspires.ftc.teamcode.hardware.secondLiftSwitch;
+import static org.firstinspires.ftc.teamcode.hardware.servoGrabberLeft;
+import static org.firstinspires.ftc.teamcode.hardware.servoGrabberRight;
 
 /**
  * Created by dansm on 12/13/2017.
@@ -75,15 +108,14 @@ public class functions{
 
     static public void firstLift(Gamepad gamepad2) throws InterruptedException{
         JDTeleopUsingRobot runningOpMode = new JDTeleopUsingRobot();
-
         if(!firstLiftSwitch.getState() && getLiftDirection(FIRST_LIFT) == UP){
             runningOpMode.addTelemetry("First Lift", "Top Limit Reached - Move Down", true);
 
             if (gamepad2.left_stick_y > 0) {
                 //Move down at a slow speed as gravity is pulling it down
                 firstGlyphLift.setPower(0.2);
-                //Sleep allows sensor to move away from the magnet
-                Thread.sleep(200);
+                //LinearOpMode.class.wait allows sensor to move away from the magnet
+                LinearOpMode.class.wait(200);
             }
             else {
                 //Don't allow to move up any further
@@ -95,7 +127,7 @@ public class functions{
 
             if(gamepad2.left_stick_y < 0){
                 firstGlyphLift.setPower(-0.5);
-                Thread.sleep(400);
+                LinearOpMode.class.wait(400);
                 setLiftDirection(FIRST_LIFT, UP);
             }
             else{
@@ -132,7 +164,7 @@ public class functions{
                 //Move down at a slow speed as gravity is pulling it down
                 secondGlyphLift.setPower(-0.3);
 
-                Thread.sleep(500);
+                LinearOpMode.class.wait(500);
 
                 setLiftDirection(SECOND_LIFT, DOWN);
             }
@@ -145,7 +177,7 @@ public class functions{
 
             if(gamepad2.right_stick_y < 0){
                 secondGlyphLift.setPower(0.5);
-                Thread.sleep(500);
+                LinearOpMode.class.wait(500);
                 setLiftDirection(SECOND_LIFT, UP);
             }
             else{
@@ -181,5 +213,64 @@ public class functions{
         cryptoboxDetector.rotateMat = true;
 
         cryptoboxDetector.enable();
+    }
+
+    static public int detectVumark(HardwareMap hMap){
+        //0 means left column, 1 is middle, 2 is right
+
+        redRecoveryAutoDogeCV runningOpMode = new redRecoveryAutoDogeCV();
+
+        VuforiaLocalizer vuforia;
+
+        int cameraMonitorViewId = hMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hMap.appContext.getPackageName());
+        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
+        parameters.vuforiaLicenseKey = " AZcIMlr/////AAAAGe1W/L9P20hXupxJsIH5bIMDl46JPwjrX2kI+L6+tigIG9bhthzvrEWVBni6g4Jkvs76N/hIT0bFun78pnNDqkG3ZP24XLj45VHA2rYKp8UDww/vfy8xrtvHxedihdX1A2vMWg8Ub8tLjBMgEAqcAYYUMwPRQfI61KQmXvAJBV79XtQughxCh/fbrtoux6WV6HHs8OydP7kPUaUU3f0z5ZOF/TUvcqFFotqnLg/KwXMxxrouRyDGCIbpbP7cYabiR7ShIGvrYoRKtbpwxS3WLSjjTd7ynvoidYipWZ60e6t+wUCzdXahS8g0veYuTQ+vwBqljhtLUWnCUjbJh2jocjxV9kLGgqlPFCmLHZyurYkX";
+        parameters.cameraDirection = VuforiaLocalizer.CameraDirection.FRONT;
+
+        this.vuforia = ClassFactory.createVuforiaLocalizer(parameters);
+
+        VuforiaTrackables relicTrackables = vuforia.loadTrackablesFromAsset("RelicVuMark");
+        VuforiaTrackable relicTemplate = relicTrackables.get(0);
+        relicTemplate.setName("relicVuMarkTemplate"); //For debug purposes
+
+        runningOpMode.addTelemetry("VuMark Detection State", "Starting", true);
+
+        relicTrackables.activate();
+
+        while(runningOpMode.opModeIsActive()){
+            RelicRecoveryVuMark vuMark = RelicRecoveryVuMark.from(relicTemplate);
+            if (vuMark != RelicRecoveryVuMark.UNKNOWN){
+                runningOpMode.addTelemetry("Vumark Found", vuMark.toString(), true);
+
+                if(vumark == RelicRecoveryVuMark.LEFT){return 0;}
+                else if(vumark == RelicRecoveryVuMark.CENTER){return 1;}
+                else if(vumark == RelicRecoveryVuMark.RIGHT){return 2;}
+            }
+        }
+    }
+
+    static public void lowerJewelArms(){
+        redRecoveryAutoDogeCV runningOpMode = new redRecoveryAutoDogeCV();
+
+        jewelKnocker.setPosition(0.5);
+        runningOpMode.sleep(200);
+
+        jewelArm.setPosition(0.05);
+        runningOpMode.sleep(200);
+    }
+
+    static public int detectJewelColor(){
+        //1 is Red, 2 is Blue
+
+        int jewelColorFound = 0;
+
+        ElapsedTime runtime = new ElapsedTime();
+        runtime.reset();
+
+        while(!(runtime.seconds() > 3 || jewelColorFound != 0)){
+
+        }
+
+
     }
 }
