@@ -1,10 +1,17 @@
 package org.firstinspires.ftc.teamcode;
 
-import static org.firstinspires.ftc.teamcode.hardware.*;
-import static org.firstinspires.ftc.teamcode.functions.*;
-
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+
+import static org.firstinspires.ftc.teamcode.functions.closeGrabber;
+import static org.firstinspires.ftc.teamcode.functions.firstLift;
+import static org.firstinspires.ftc.teamcode.functions.initServos;
+import static org.firstinspires.ftc.teamcode.functions.move;
+import static org.firstinspires.ftc.teamcode.functions.openGrabber;
+import static org.firstinspires.ftc.teamcode.functions.openGrabberWide;
+import static org.firstinspires.ftc.teamcode.functions.scaleInput;
+import static org.firstinspires.ftc.teamcode.functions.secondLift;
+import static org.firstinspires.ftc.teamcode.hardware.initHardwareMap;
 
 
 
