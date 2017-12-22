@@ -2,12 +2,15 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
+
+import java.util.concurrent.TimeUnit;
 
 import static org.firstinspires.ftc.teamcode.hardware.initHardwareMap;
 
@@ -31,7 +34,7 @@ public class redRecoveryAutoDogeCV extends LinearOpMode{
         boolean hardwareMapState = initHardwareMap(hardwareMap);
 
         //initServos();
-        int vuMarkNum;
+        RelicRecoveryVuMark vuMark = RelicRecoveryVuMark.UNKNOWN;
         waitForStart();
         //Code to run after play is pressed
 
@@ -52,17 +55,22 @@ public class redRecoveryAutoDogeCV extends LinearOpMode{
 
         relicTrackables.activate();
 
-        while(opModeIsActive()){
-            RelicRecoveryVuMark vuMark = RelicRecoveryVuMark.from(relicTemplate);
+        long startTime = System.nanoTime();
+        long estimatedTime = System.nanoTime() - startTime;
 
-            if (vuMark != null && vuMark != RelicRecoveryVuMark.UNKNOWN){
+        //try to read the vumark until we find a valid vumark or for 3 seconds
+        while( vuMark == RelicRecoveryVuMark.UNKNOWN  || TimeUnit.NANOSECONDS.toSeconds(estimatedTime) <= 3 ){
+            vuMark = RelicRecoveryVuMark.from(relicTemplate);
+            if (vuMark != RelicRecoveryVuMark.UNKNOWN){
                 addTelemetry("Vumark Found", vuMark.toString(), true);
-
-                if(vuMark == RelicRecoveryVuMark.LEFT){vuMarkNum = 0;}
-                else if(vuMark == RelicRecoveryVuMark.CENTER){vuMarkNum = 1;}
-                else if(vuMark == RelicRecoveryVuMark.RIGHT){vuMarkNum = 2;}
                 break;
             }
+        }
+
+        //if more than 3 seconds and vumark is not found, default to LEFT
+        if (vuMark == RelicRecoveryVuMark.UNKNOWN) {
+            addTelemetry("Vumark Not Found, Defaulting to LEFT", vuMark.toString(), true);
+            vuMark = RelicRecoveryVuMark.LEFT;
         }
 
 

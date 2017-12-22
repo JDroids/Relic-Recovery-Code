@@ -1,10 +1,17 @@
 package org.firstinspires.ftc.teamcode;
 
+import android.graphics.Color;
+
 import com.disnodeteam.dogecv.CameraViewDisplay;
 import com.disnodeteam.dogecv.detectors.CryptoboxDetector;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+
+import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 import static org.firstinspires.ftc.teamcode.JDTeleopUsingRobot.getLiftDirection;
 import static org.firstinspires.ftc.teamcode.JDTeleopUsingRobot.setLiftDirection;
@@ -19,11 +26,13 @@ import static org.firstinspires.ftc.teamcode.constants.SERVO_GRABBER_OPEN_POSITI
 import static org.firstinspires.ftc.teamcode.constants.SERVO_GRABBER_WIDE_OPEN_POSITION;
 import static org.firstinspires.ftc.teamcode.constants.STRAFING_LIMIT;
 import static org.firstinspires.ftc.teamcode.constants.UP;
+import static org.firstinspires.ftc .teamcode.constants.JewelColor;
 import static org.firstinspires.ftc.teamcode.hardware.backLeftDriveMotor;
 import static org.firstinspires.ftc.teamcode.hardware.backRightDriveMotor;
 import static org.firstinspires.ftc.teamcode.hardware.firstGlyphLift;
 import static org.firstinspires.ftc.teamcode.hardware.firstLiftSwitch;
 import static org.firstinspires.ftc.teamcode.hardware.frontLeftDriveMotor;
+import static org.firstinspires.ftc.teamcode.hardware.frontRangeSensor;
 import static org.firstinspires.ftc.teamcode.hardware.frontRightDriveMotor;
 import static org.firstinspires.ftc.teamcode.hardware.jewelArm;
 import static org.firstinspires.ftc.teamcode.hardware.jewelKnocker;
@@ -31,6 +40,7 @@ import static org.firstinspires.ftc.teamcode.hardware.secondGlyphLift;
 import static org.firstinspires.ftc.teamcode.hardware.secondLiftSwitch;
 import static org.firstinspires.ftc.teamcode.hardware.servoGrabberLeft;
 import static org.firstinspires.ftc.teamcode.hardware.servoGrabberRight;
+import static org.firstinspires.ftc.teamcode.hardware.jewelColorSensor;
 
 /**
  * Created by dansm on 12/13/2017.
@@ -215,17 +225,81 @@ public class functions{
         runningOpMode.sleep(200);
     }
 
-    /*static public int detectJewelColor(){
-        //1 is Red, 2 is Blue
+    static public JewelColor detectJewelColor(){
 
-        int jewelColorFound = 0;
+        JewelColor jewelColorFound = JewelColor.NONE;
 
-        ElapsedTime runtime = new ElapsedTime();
-        runtime.reset();
+        long startTime = System.nanoTime();
+        long estimatedTime = System.nanoTime() - startTime;
 
-        while(!(runtime.seconds() > 3 || jewelColorFound != 0)){
+        while( TimeUnit.NANOSECONDS.toSeconds(estimatedTime) < 3 ||
+                jewelColorFound == JewelColor.RED || jewelColorFound == JewelColor.BLUE){
+
+            // hsvValues is an array that will hold the hue, saturation, and value information.
+            float hsvValues[] = {0F, 0F, 0F};
+
+            // values is a reference to the hsvValues array.
+            final float values[] = hsvValues;
+           // sometimes it helps to multiply the raw RGB values with a scale factor
+            // to amplify/attentuate the measured values.
+            final double SCALE_FACTOR = 255;
+            jewelColorSensor.enableLed(true);
+                // convert the RGB values to HSV values.
+            // multiply by the SCALE_FACTOR.
+            // then cast it back to int (SCALE_FACTOR is a double)
+            Color.RGBToHSV((int) (jewelColorSensor.red() * SCALE_FACTOR), (int) (jewelColorSensor.green() * SCALE_FACTOR),
+                    (int) (jewelColorSensor.blue() * SCALE_FACTOR),hsvValues);
+            //TODO: based on hue value determine the color - look at Blocks code for the actual values
 
         }
+        return jewelColorFound;
+    }
 
-    }*/
+    //get five readings to sample
+    static public double[]  readDistanceFromPerimeterWallUsingRange(){
+
+       double[] sensorValues = new double[5];
+       for ( int i=0 ; i< 5 ; i++ ){
+           sensorValues[i] = frontRangeSensor.getDistance(DistanceUnit.CM);
+           //TODO: should we wait for 100 ms before we take the next reading..
+       }
+       return sensorValues;
+    }
+
+    //AVT Algorithm to filter range sensor values and return the sampled distance
+    // calculate average value
+    //AVT algorithm stands for Antonyan Vardan Transform and its implementation explained below.
+    //Collect n samples of data
+    //Calculate the standard deviation and average value
+    //Drop any data that is greater or less than average ± one standard deviation
+    //Calculate average value of remaining data
+    static double filterRangeSensorValues(double[] rangeSensorValues){
+
+        //calculate average
+        double sum = 0;
+        for(int i=0; i < rangeSensorValues.length ; i++)
+            sum = sum + rangeSensorValues[i];
+        double average = sum / rangeSensorValues.length;
+
+        //calculate standard deviation
+        double sd = 0;
+        for(int i = 0; i < rangeSensorValues.length; i++){
+            sd = sd + Math.pow((rangeSensorValues[i]-average),2);
+        }
+        double standardDeviation = Math.sqrt(sd/rangeSensorValues.length);
+
+        //Drop any data that is greater or less than average ± one standard deviation
+        int newlength=0;
+        double newSum=0;
+        for(int i = 0; i < rangeSensorValues.length; i++){
+            if ( !(rangeSensorValues[i] > average+standardDeviation || rangeSensorValues[i] < average-standardDeviation ) ){
+                newlength++;
+                newSum= newSum+rangeSensorValues[i];
+            }
+        }
+
+        //distance is average value of remaining data
+        return newSum/newlength;
+    }
+
 }
