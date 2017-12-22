@@ -1,6 +1,9 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import android.graphics.Color;
+
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -28,6 +31,8 @@ public class hardware{
     static DigitalChannel firstLiftSwitch = null;
     static DigitalChannel secondLiftSwitch = null;
 
+    static ColorSensor jewelColorSensor = null;
+
     static public boolean initHardwareMap(HardwareMap map){
         HardwareMap hMap = map;
 
@@ -51,6 +56,9 @@ public class hardware{
 
             firstLiftSwitch.setMode(DigitalChannel.Mode.INPUT);
             secondLiftSwitch.setMode(DigitalChannel.Mode.INPUT);
+
+            jewelColorSensor = hMap.colorSensor.get("color1");
+
 
             return true;
         }
