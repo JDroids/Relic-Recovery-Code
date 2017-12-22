@@ -69,9 +69,6 @@ public class JDAuto extends LinearOpMode{
             if jewelColorFound = stoneFound;
             if jewelColorFound != stoneFound;
 
-
-
-
         }
     }
 }
