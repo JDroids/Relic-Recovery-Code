@@ -61,13 +61,16 @@ public class JDAuto extends LinearOpMode{
         JEWEL_ARM_INIT_POSITION = 0.05;
         Thread.sleep(200);
 
+        int jewelColorFound = -100;
+        int stoneFound = -100; // these two lines are for compiling purposes only
+
         while(opModeIsActive()) {
 
             waitForStart();
-            if jewelColorFound = 0;
+            if(jewelColorFound == 0){}
             //do nothing
-            if jewelColorFound = stoneFound;
-            if jewelColorFound != stoneFound;
+            if(jewelColorFound == stoneFound){}
+            if(jewelColorFound != stoneFound){}
 
         }
     }

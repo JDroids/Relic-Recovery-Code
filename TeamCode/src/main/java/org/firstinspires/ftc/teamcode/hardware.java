@@ -28,7 +28,7 @@ public class hardware{
     static DigitalChannel firstLiftSwitch = null;
     static DigitalChannel secondLiftSwitch = null;
 
-    static public boolean initHardwareMap(HardwareMap map){
+    public static boolean initHardwareMap(HardwareMap map){
         HardwareMap hMap = map;
 
         try{
