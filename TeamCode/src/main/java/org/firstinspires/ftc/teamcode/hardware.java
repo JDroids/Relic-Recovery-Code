@@ -22,9 +22,6 @@ public class hardware{
     static DcMotor firstGlyphLift = null;
     static DcMotor secondGlyphLift = null;
 
-    static Servo servoGrabberLeft = null;
-    static Servo servoGrabberRight = null;
-
     static Servo glyphGrabberTL = null;
     static Servo glyphGrabberTR = null;
     static Servo glyphGrabberBL = null;
@@ -53,13 +50,10 @@ public class hardware{
             firstGlyphLift = hMap.dcMotor.get("MotorGlyphLift");
             secondGlyphLift = hMap.dcMotor.get("MotorGlyphLift2");
 
-            servoGrabberLeft = hMap.servo.get("servoGrabberRight");
-            servoGrabberRight = hMap.servo.get("servoGrabberLeft");
-
-            glyphGrabberTL = hMap.servo.get("lowerServoGrabberLeft");
-            glyphGrabberTR = hMap.servo.get("lowerServoGrabberRight");
-            glyphGrabberBL = hMap.servo.get("servoGrabberLeft ");
-            glyphGrabberBR = hMap.servo.get("servoGrabberRight");
+            glyphGrabberTL = hMap.servo.get("glyphGrabberTL");
+            glyphGrabberTR = hMap.servo.get("glyphGrabberTR");
+            glyphGrabberBL = hMap.servo.get("glyphGrabberBL");
+            glyphGrabberBR = hMap.servo.get("glyphGrabberBR");
 
             jewelKnocker = hMap.servo.get("servoJewelKnock");
             jewelArm = hMap.servo.get("servoJewelArm");
@@ -75,8 +69,16 @@ public class hardware{
             jewelColorSensor = hMap.colorSensor.get("color1");
 
             //frontRangeSensor = hMap.get(ModernRoboticsI2cRangeSensor.class, "frontRange");
-            sideRangeSensor = hMap.get(ModernRoboticsI2cRangeSensor.class, "LeftRange");
+            sideRangeSensor = hMap.get(ModernRoboticsI2cRangeSensor.class, "sideRange");
 
+            BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+            parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
+            parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+            parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
+            parameters.loggingEnabled      = true;
+            parameters.loggingTag          = "IMU";
+
+            imuSensor.initialize(parameters);
 
             return true;
         }

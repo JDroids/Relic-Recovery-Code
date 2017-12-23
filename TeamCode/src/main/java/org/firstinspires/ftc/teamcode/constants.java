@@ -22,6 +22,10 @@ public class constants{
     static int UP = 1;
     static int DOWN = -1;
 
-    public enum JewelColor {NONE, RED, BLUE;}
+    public enum JewelColor {NONE, RED, BLUE};
+
+    static int BOTH_GRABBERS = 0;
+    static int BOTTOM_GRABBER = 1;
+    static int TOP_GRABBER = 2;
 
 }
