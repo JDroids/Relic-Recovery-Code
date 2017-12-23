@@ -1,8 +1,7 @@
 
 package org.firstinspires.ftc.teamcode;
 
-import android.graphics.Color;
-
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
@@ -32,6 +31,8 @@ public class hardware{
     static DigitalChannel secondLiftSwitch = null;
 
     static ColorSensor jewelColorSensor = null;
+    static ModernRoboticsI2cRangeSensor sideRangeSensor;
+    static ModernRoboticsI2cRangeSensor frontRangeSensor;
 
     static public boolean initHardwareMap(HardwareMap map){
         HardwareMap hMap = map;
@@ -59,6 +60,8 @@ public class hardware{
 
             jewelColorSensor = hMap.colorSensor.get("color1");
 
+            frontRangeSensor = hMap.get(ModernRoboticsI2cRangeSensor.class, "frontRange");
+            sideRangeSensor = hMap.get(ModernRoboticsI2cRangeSensor.class, "sideRange");
 
             return true;
         }
