@@ -28,4 +28,7 @@ public class constants{
     static int BOTTOM_GRABBER = 1;
     static int TOP_GRABBER = 2;
 
+    static int RED = 0;
+    static int BLUE = 1;
+
 }

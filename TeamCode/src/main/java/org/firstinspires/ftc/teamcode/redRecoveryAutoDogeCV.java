@@ -52,17 +52,17 @@ public class redRecoveryAutoDogeCV extends LinearOpMode{
 
         closeGrabber(BOTTOM_GRABBER);
 
-        moveUntilCryptoWall(distanceToWall, vuMark, this);
+        moveUntilCryptoWall(distanceToWall, vuMark, RED, this);
 
 
         turn(90, this);
 
         sleep(100);
 
-        moveForTime(0.3, 300, this);
+        moveForTime(0.3, 3000, this);
 
         openGrabber(BOTTOM_GRABBER);
-        moveForTime(-0.3, 100, this);
+        moveForTime(-0.3, 1000, this);
 
         openGrabberWide(BOTTOM_GRABBER);
 

@@ -23,6 +23,7 @@ import java.util.concurrent.TimeUnit;
 
 import static org.firstinspires.ftc.teamcode.JDTeleopUsingRobot.getLiftDirection;
 import static org.firstinspires.ftc.teamcode.JDTeleopUsingRobot.setLiftDirection;
+import static org.firstinspires.ftc.teamcode.constants.BLUE;
 import static org.firstinspires.ftc.teamcode.constants.BOTH_GRABBERS;
 import static org.firstinspires.ftc.teamcode.constants.BOTTOM_GRABBER;
 import static org.firstinspires.ftc.teamcode.constants.DOWN;
@@ -30,6 +31,7 @@ import static org.firstinspires.ftc.teamcode.constants.FIRST_LIFT;
 import static org.firstinspires.ftc.teamcode.constants.JEWEL_ARM_INIT_POSITION;
 import static org.firstinspires.ftc.teamcode.constants.JEWEL_KNOCKER_INIT_POSITION;
 import static org.firstinspires.ftc.teamcode.constants.JewelColor;
+import static org.firstinspires.ftc.teamcode.constants.RED;
 import static org.firstinspires.ftc.teamcode.constants.SECOND_LIFT;
 import static org.firstinspires.ftc.teamcode.constants.SERVO_GRABBER_CLOSE_POSITION;
 import static org.firstinspires.ftc.teamcode.constants.SERVO_GRABBER_INIT_POSITION;
@@ -389,17 +391,26 @@ public class functions{
     }
 
 
-    static public void moveUntilCryptoWall(double distanceToWall, RelicRecoveryVuMark vuMark, LinearOpMode linearOpMode){
+    static public void moveUntilCryptoWall(double distanceToWall, RelicRecoveryVuMark vuMark, int color, LinearOpMode linearOpMode){
         int targetColumn;
 
-        if(vuMark == RelicRecoveryVuMark.LEFT){
+        if(vuMark == RelicRecoveryVuMark.LEFT && color == RED){
             targetColumn = 1;
         }
-        else if(vuMark == RelicRecoveryVuMark.CENTER){
+        else if(vuMark == RelicRecoveryVuMark.CENTER && color == RED){
             targetColumn = 2;
         }
-        else if(vuMark == RelicRecoveryVuMark.RIGHT){
+        else if(vuMark == RelicRecoveryVuMark.RIGHT && color == RED){
             targetColumn = 3;
+        }
+        else if(vuMark == RelicRecoveryVuMark.LEFT && color == BLUE){
+            targetColumn = 3;
+        }
+        else if(vuMark == RelicRecoveryVuMark.CENTER && color == BLUE){
+            targetColumn = 2;
+        }
+        else if(vuMark == RelicRecoveryVuMark.RIGHT && color == BLUE){
+            targetColumn = 1;
         }
         else{
             targetColumn = 1;
@@ -409,10 +420,18 @@ public class functions{
 
         double distanceToCryptoBoxWall = distanceToWall - 5;
 
-        frontLeftDriveMotor.setPower(0.2);
-        frontRightDriveMotor.setPower(-0.2);
-        backLeftDriveMotor.setPower(0.2);
-        backRightDriveMotor.setPower(-0.2);
+        if(color == RED) {
+            frontLeftDriveMotor.setPower(0.2);
+            frontRightDriveMotor.setPower(-0.2);
+            backLeftDriveMotor.setPower(0.2);
+            backRightDriveMotor.setPower(-0.2);
+        }
+        else if(color == BLUE){
+            frontLeftDriveMotor.setPower(-0.2);
+            frontRightDriveMotor.setPower(0.2);
+            backLeftDriveMotor.setPower(-0.2);
+            backRightDriveMotor.setPower(0.2);
+        }
         while(linearOpMode.opModeIsActive()) {
             if (sideRangeSensor.cmUltrasonic() <= distanceToCryptoBoxWall) {
                 columnsPassed++;
