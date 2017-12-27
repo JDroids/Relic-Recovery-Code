@@ -63,16 +63,16 @@ public class JDAuto extends LinearOpMode{
         while(opModeIsActive()) {
 
             waitForStart();
-<<<<<<< HEAD
+//<<<<<<< HEAD
 
-=======
+//=======
             if(jewelColorFound == 0){}
             //do nothing
             if(jewelColorFound == stoneFound){}
             //knock opposite
             if(jewelColorFound != stoneFound){}
             //knock same
->>>>>>> 6cdc3587bb71ff22a0831a0017765346113cb068
+//>>>>>>> 6cdc3587bb71ff22a0831a0017765346113cb068
 
         }
     }

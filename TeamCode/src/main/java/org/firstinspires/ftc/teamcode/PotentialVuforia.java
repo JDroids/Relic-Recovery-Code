@@ -1,15 +1,13 @@
 package org.firstinspires.ftc.teamcode;
   
  import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-         import com.vuforia.HINT;
-         import com.vuforia.Vuforia;
+import com.vuforia.HINT;
+import com.vuforia.Vuforia;
 
-         import org.firstinspires.ftc.robotcore.external.ClassFactory;
-         import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
-         import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
-         import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
-         import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
-         import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
+import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 
 /**
  * Created by kevin on 12/17/17.
@@ -38,7 +36,7 @@ package org.firstinspires.ftc.teamcode;
 
        while (opModeIsActive()){
            for(VuforiaTrackable track : Trackie);
-                OpenGLMatrix pose = ((VuforiaTrackableDefaultListener) .getListener()).getPose();
+                //OpenGLMatrix pose = ((VuforiaTrackableDefaultListener) .getListener()).getPose();
             }
         }
     }

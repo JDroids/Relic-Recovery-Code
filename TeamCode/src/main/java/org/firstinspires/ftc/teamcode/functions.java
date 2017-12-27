@@ -4,13 +4,17 @@ import android.graphics.Color;
 
 import com.disnodeteam.dogecv.CameraViewDisplay;
 import com.disnodeteam.dogecv.detectors.CryptoboxDetector;
+import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
-import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
 import static org.firstinspires.ftc.teamcode.JDTeleopUsingRobot.getLiftDirection;
@@ -19,6 +23,7 @@ import static org.firstinspires.ftc.teamcode.constants.DOWN;
 import static org.firstinspires.ftc.teamcode.constants.FIRST_LIFT;
 import static org.firstinspires.ftc.teamcode.constants.JEWEL_ARM_INIT_POSITION;
 import static org.firstinspires.ftc.teamcode.constants.JEWEL_KNOCKER_INIT_POSITION;
+import static org.firstinspires.ftc.teamcode.constants.JewelColor;
 import static org.firstinspires.ftc.teamcode.constants.SECOND_LIFT;
 import static org.firstinspires.ftc.teamcode.constants.SERVO_GRABBER_CLOSE_POSITION;
 import static org.firstinspires.ftc.teamcode.constants.SERVO_GRABBER_INIT_POSITION;
@@ -26,7 +31,6 @@ import static org.firstinspires.ftc.teamcode.constants.SERVO_GRABBER_OPEN_POSITI
 import static org.firstinspires.ftc.teamcode.constants.SERVO_GRABBER_WIDE_OPEN_POSITION;
 import static org.firstinspires.ftc.teamcode.constants.STRAFING_LIMIT;
 import static org.firstinspires.ftc.teamcode.constants.UP;
-import static org.firstinspires.ftc .teamcode.constants.JewelColor;
 import static org.firstinspires.ftc.teamcode.hardware.backLeftDriveMotor;
 import static org.firstinspires.ftc.teamcode.hardware.backRightDriveMotor;
 import static org.firstinspires.ftc.teamcode.hardware.firstGlyphLift;
@@ -34,13 +38,14 @@ import static org.firstinspires.ftc.teamcode.hardware.firstLiftSwitch;
 import static org.firstinspires.ftc.teamcode.hardware.frontLeftDriveMotor;
 import static org.firstinspires.ftc.teamcode.hardware.frontRangeSensor;
 import static org.firstinspires.ftc.teamcode.hardware.frontRightDriveMotor;
+import static org.firstinspires.ftc.teamcode.hardware.imuSensor;
 import static org.firstinspires.ftc.teamcode.hardware.jewelArm;
+import static org.firstinspires.ftc.teamcode.hardware.jewelColorSensor;
 import static org.firstinspires.ftc.teamcode.hardware.jewelKnocker;
 import static org.firstinspires.ftc.teamcode.hardware.secondGlyphLift;
 import static org.firstinspires.ftc.teamcode.hardware.secondLiftSwitch;
 import static org.firstinspires.ftc.teamcode.hardware.servoGrabberLeft;
 import static org.firstinspires.ftc.teamcode.hardware.servoGrabberRight;
-import static org.firstinspires.ftc.teamcode.hardware.jewelColorSensor;
 
 /**
  * Created by dansm on 12/13/2017.
@@ -225,6 +230,53 @@ public class functions{
         runningOpMode.sleep(200);
     }
 
+    static public void turn(int degrees){
+        countPasses runningOpMode = new countPasses();
+
+        Orientation angles;
+
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
+        parameters.loggingEnabled      = true;
+        parameters.loggingTag          = "IMU";
+        parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
+
+        imuSensor.initialize(parameters);
+
+        angles = imuSensor.getAngularOrientation().toAxesReference(AxesReference.INTRINSIC).toAxesOrder(AxesOrder.ZYX);
+        float originalZ = angles.firstAngle;
+        float currentZ = angles.firstAngle;
+
+        while((!(currentZ >= degrees-3) && !(currentZ<=degrees+3)) && runningOpMode.opModeIsActive()){
+            angles = imuSensor.getAngularOrientation().toAxesReference(AxesReference.INTRINSIC).toAxesOrder(AxesOrder.ZYX);
+            currentZ = angles.firstAngle;
+
+            if(degrees > 0){
+                frontLeftDriveMotor.setPower(0.3);
+                frontRightDriveMotor.setPower(0.3);
+                backLeftDriveMotor.setPower(0.3);
+                backRightDriveMotor.setPower(0.3);
+            }
+            else{
+                frontLeftDriveMotor.setPower(-0.3);
+                frontRightDriveMotor.setPower(-0.3);
+                backLeftDriveMotor.setPower(-0.3);
+                backRightDriveMotor.setPower(-0.3);
+            }
+
+            runningOpMode.telemetry.addData("Current Z", currentZ);
+            runningOpMode.telemetry.addData("Original Z", originalZ);
+        }
+
+        frontLeftDriveMotor.setPower(0.0);
+        frontRightDriveMotor.setPower(0.0);
+        backLeftDriveMotor.setPower(0.0);
+        backRightDriveMotor.setPower(0.0);
+
+    }
+
     static public JewelColor detectJewelColor(){
 
         JewelColor jewelColorFound = JewelColor.NONE;
@@ -253,18 +305,15 @@ public class functions{
             float hue = hsvValues[0];
             if (hue >= 190 && hue <= 235) {
                 jewelColorFound = JewelColor.BLUE;
-                addTelemetry("jewelColorFound = Blue");
             }
 
             else if (hue <= 15 || hue >= 350) {
                 jewelColorFound = JewelColor.RED;
-                addTelemetry("jewelColorFound = Red");
 
             }
 
             else if (hue == 0); {
                 jewelColorFound = JewelColor.NONE;
-                addTelemetry("jewelColorFound = Unknown");
 
             }
 

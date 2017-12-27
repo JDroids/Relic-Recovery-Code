@@ -1,6 +1,7 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -24,6 +25,11 @@ public class hardware{
     static Servo servoGrabberLeft = null;
     static Servo servoGrabberRight = null;
 
+    static Servo glyphGrabberTL = null;
+    static Servo glyphGrabberTR = null;
+    static Servo glyphGrabberBL = null;
+    static Servo glyphGrabberBR = null;
+
     static Servo jewelKnocker = null;
     static Servo jewelArm = null;
 
@@ -33,6 +39,7 @@ public class hardware{
     static ColorSensor jewelColorSensor = null;
     static ModernRoboticsI2cRangeSensor sideRangeSensor;
     static ModernRoboticsI2cRangeSensor frontRangeSensor;
+    static BNO055IMU imuSensor = null;
 
     static public boolean initHardwareMap(HardwareMap map){
         HardwareMap hMap = map;
@@ -49,6 +56,11 @@ public class hardware{
             servoGrabberLeft = hMap.servo.get("servoGrabberRight");
             servoGrabberRight = hMap.servo.get("servoGrabberLeft");
 
+            glyphGrabberTL = hMap.servo.get("lowerServoGrabberLeft");
+            glyphGrabberTR = hMap.servo.get("lowerServoGrabberRight");
+            glyphGrabberBL = hMap.servo.get("servoGrabberLeft ");
+            glyphGrabberBR = hMap.servo.get("servoGrabberRight");
+
             jewelKnocker = hMap.servo.get("servoJewelKnock");
             jewelArm = hMap.servo.get("servoJewelArm");
 
@@ -58,10 +70,13 @@ public class hardware{
             firstLiftSwitch.setMode(DigitalChannel.Mode.INPUT);
             secondLiftSwitch.setMode(DigitalChannel.Mode.INPUT);
 
+            imuSensor = hMap.get(BNO055IMU.class, "imu");
+
             jewelColorSensor = hMap.colorSensor.get("color1");
 
-            frontRangeSensor = hMap.get(ModernRoboticsI2cRangeSensor.class, "frontRange");
-            sideRangeSensor = hMap.get(ModernRoboticsI2cRangeSensor.class, "sideRange");
+            //frontRangeSensor = hMap.get(ModernRoboticsI2cRangeSensor.class, "frontRange");
+            sideRangeSensor = hMap.get(ModernRoboticsI2cRangeSensor.class, "LeftRange");
+
 
             return true;
         }
