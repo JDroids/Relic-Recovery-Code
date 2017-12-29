@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import android.graphics.Color;
+import android.util.Log;
 
 import com.disnodeteam.dogecv.CameraViewDisplay;
 import com.disnodeteam.dogecv.detectors.CryptoboxDetector;
@@ -25,25 +26,30 @@ import static org.firstinspires.ftc.teamcode.JDTeleopUsingRobot.getLiftDirection
 import static org.firstinspires.ftc.teamcode.JDTeleopUsingRobot.setLiftDirection;
 import static org.firstinspires.ftc.teamcode.constants.BOTH_GRABBERS;
 import static org.firstinspires.ftc.teamcode.constants.BOTTOM_GRABBER;
+import static org.firstinspires.ftc.teamcode.constants.BOTTOM_SERVO_GRABBER_OPEN_POSITION;
 import static org.firstinspires.ftc.teamcode.constants.DOWN;
 import static org.firstinspires.ftc.teamcode.constants.FIRST_LIFT;
 import static org.firstinspires.ftc.teamcode.constants.JEWEL_ARM_INIT_POSITION;
 import static org.firstinspires.ftc.teamcode.constants.JEWEL_KNOCKER_INIT_POSITION;
 import static org.firstinspires.ftc.teamcode.constants.JewelColor;
 import static org.firstinspires.ftc.teamcode.constants.SECOND_LIFT;
-import static org.firstinspires.ftc.teamcode.constants.SERVO_GRABBER_CLOSE_POSITION;
-import static org.firstinspires.ftc.teamcode.constants.SERVO_GRABBER_INIT_POSITION;
-import static org.firstinspires.ftc.teamcode.constants.SERVO_GRABBER_OPEN_POSITION;
-import static org.firstinspires.ftc.teamcode.constants.SERVO_GRABBER_WIDE_OPEN_POSITION;
+import static org.firstinspires.ftc.teamcode.constants.TOP_SERVO_GRABBER_INIT_POSITION;
+import static org.firstinspires.ftc.teamcode.constants.BOTTOM_SERVO_GRABBER_INIT_POSITION;
+import static org.firstinspires.ftc.teamcode.constants.TOP_SERVO_GRABBER_CLOSE_POSITION;
+import static org.firstinspires.ftc.teamcode.constants.BOTTOM_SERVO_GRABBER_CLOSE_POSITION;
+import static org.firstinspires.ftc.teamcode.constants.TOP_SERVO_GRABBER_OPEN_POSITION;
+import static org.firstinspires.ftc.teamcode.constants.BOTTOM_SERVO_GRABBER_CLOSE_POSITION;
+import static org.firstinspires.ftc.teamcode.constants.TOP_SERVO_GRABBER_WIDE_OPEN_POSITION;
+import static org.firstinspires.ftc.teamcode.constants.BOTTOM_SERVO_GRABBER_WIDE_OPEN_POSITION;
+
 import static org.firstinspires.ftc.teamcode.constants.STRAFING_LIMIT;
 import static org.firstinspires.ftc.teamcode.constants.TOP_GRABBER;
-import static org.firstinspires.ftc.teamcode.constants.UP;
+import static org.firstinspires.ftc.teamcode.constants.UP;;
 import static org.firstinspires.ftc.teamcode.hardware.backLeftDriveMotor;
 import static org.firstinspires.ftc.teamcode.hardware.backRightDriveMotor;
 import static org.firstinspires.ftc.teamcode.hardware.firstGlyphLift;
 import static org.firstinspires.ftc.teamcode.hardware.firstLiftSwitch;
 import static org.firstinspires.ftc.teamcode.hardware.frontLeftDriveMotor;
-import static org.firstinspires.ftc.teamcode.hardware.frontRangeSensor;
 import static org.firstinspires.ftc.teamcode.hardware.frontRightDriveMotor;
 import static org.firstinspires.ftc.teamcode.hardware.glyphGrabberBL;
 import static org.firstinspires.ftc.teamcode.hardware.glyphGrabberBR;
@@ -56,6 +62,7 @@ import static org.firstinspires.ftc.teamcode.hardware.jewelKnocker;
 import static org.firstinspires.ftc.teamcode.hardware.secondGlyphLift;
 import static org.firstinspires.ftc.teamcode.hardware.secondLiftSwitch;
 import static org.firstinspires.ftc.teamcode.hardware.sideRangeSensor;
+import static org.firstinspires.ftc.teamcode.hardware.sideRangeSensorFront;
 
 /**
  * Created by dansm on 12/13/2017.
@@ -73,6 +80,23 @@ public class functions{
             result = -0.7;
         }
         return result;
+    }
+
+    //scaling logic 2 to use 3 fixed speeds as opposed to varying speeds to avoid jerks while driving
+    static public double scaleInputFixedSpeed(double dVal) throws InterruptedException {
+        int sign = (int) (dVal/ dVal);
+        double result = Math.abs(dVal);
+
+        if ( result < 0.4 ) {
+            result = 0.3;
+        }
+        else if (result < 0.7) {
+            result = 0.6;
+        }
+        else {
+            result = 0.75;
+        }
+        return result*sign ;
     }
 
     static public void setGrabber(double leftServoPosition, double rightServoPosition, int grabbers) throws InterruptedException{
@@ -98,20 +122,45 @@ public class functions{
     }
 
     static public void initServos() throws InterruptedException{
-        setGrabber(SERVO_GRABBER_INIT_POSITION[0], SERVO_GRABBER_INIT_POSITION[1], BOTH_GRABBERS);
+        setGrabber(TOP_SERVO_GRABBER_INIT_POSITION[0], TOP_SERVO_GRABBER_INIT_POSITION[1], TOP_GRABBER);
+        setGrabber(BOTTOM_SERVO_GRABBER_INIT_POSITION[0], BOTTOM_SERVO_GRABBER_INIT_POSITION[1], BOTTOM_GRABBER);
         setJewelPosition(JEWEL_KNOCKER_INIT_POSITION, JEWEL_ARM_INIT_POSITION);
     }
 
-    static public void closeGrabber(int grabbers) throws InterruptedException{
-        setGrabber(SERVO_GRABBER_CLOSE_POSITION[0], SERVO_GRABBER_CLOSE_POSITION[1], grabbers);
+    static public void closeGrabber(int grabber) throws InterruptedException{
+        if (grabber == BOTH_GRABBERS){
+            setGrabber(TOP_SERVO_GRABBER_CLOSE_POSITION[0], TOP_SERVO_GRABBER_CLOSE_POSITION[1], TOP_GRABBER);
+            setGrabber(BOTTOM_SERVO_GRABBER_CLOSE_POSITION[0], BOTTOM_SERVO_GRABBER_CLOSE_POSITION[1], BOTTOM_GRABBER);
+        }else if ( grabber == TOP_GRABBER){
+            setGrabber(TOP_SERVO_GRABBER_CLOSE_POSITION[0], TOP_SERVO_GRABBER_CLOSE_POSITION[1], TOP_GRABBER);
+
+        }else if (grabber == BOTTOM_GRABBER){
+            setGrabber(BOTTOM_SERVO_GRABBER_CLOSE_POSITION[0], BOTTOM_SERVO_GRABBER_CLOSE_POSITION[1], BOTTOM_GRABBER);
+        }
     }
 
-    static public void openGrabber(int grabbers) throws InterruptedException{
-        setGrabber(SERVO_GRABBER_OPEN_POSITION[0], SERVO_GRABBER_OPEN_POSITION[1], grabbers);
+    static public void openGrabber(int grabber) throws InterruptedException{
+        if (grabber == BOTH_GRABBERS){
+            setGrabber(TOP_SERVO_GRABBER_OPEN_POSITION[0], TOP_SERVO_GRABBER_OPEN_POSITION[1], TOP_GRABBER);
+            setGrabber(BOTTOM_SERVO_GRABBER_OPEN_POSITION[0], BOTTOM_SERVO_GRABBER_OPEN_POSITION[1], BOTTOM_GRABBER);
+        }else if ( grabber == TOP_GRABBER){
+            setGrabber(TOP_SERVO_GRABBER_OPEN_POSITION[0], TOP_SERVO_GRABBER_OPEN_POSITION[1], TOP_GRABBER);
+
+        }else if (grabber == BOTTOM_GRABBER){
+            setGrabber(BOTTOM_SERVO_GRABBER_OPEN_POSITION[0], BOTTOM_SERVO_GRABBER_OPEN_POSITION[1], BOTTOM_GRABBER);
+        }
     }
 
-    static public void openGrabberWide(int grabbers) throws InterruptedException{
-        setGrabber(SERVO_GRABBER_WIDE_OPEN_POSITION[0], SERVO_GRABBER_WIDE_OPEN_POSITION[1], grabbers);
+    static public void openGrabberWide(int grabber) throws InterruptedException{
+        if (grabber == BOTH_GRABBERS){
+            setGrabber(TOP_SERVO_GRABBER_WIDE_OPEN_POSITION[0], TOP_SERVO_GRABBER_WIDE_OPEN_POSITION[1], TOP_GRABBER);
+            setGrabber(BOTTOM_SERVO_GRABBER_WIDE_OPEN_POSITION[0], BOTTOM_SERVO_GRABBER_WIDE_OPEN_POSITION[1], BOTTOM_GRABBER);
+        }else if ( grabber == TOP_GRABBER){
+            setGrabber(TOP_SERVO_GRABBER_WIDE_OPEN_POSITION[0], TOP_SERVO_GRABBER_WIDE_OPEN_POSITION[1], TOP_GRABBER);
+
+        }else if (grabber == BOTTOM_GRABBER){
+            setGrabber(BOTTOM_SERVO_GRABBER_WIDE_OPEN_POSITION[0], BOTTOM_SERVO_GRABBER_WIDE_OPEN_POSITION[1], BOTTOM_GRABBER);
+        }
     }
 
     static public void move(double leftY, double rightY, double leftX, double rightX) throws InterruptedException{
@@ -156,10 +205,11 @@ public class functions{
             linearOpMode.telemetry.update();
 
             if (gamepad2.left_stick_y > 0) {
-                //Move down at a slow speed as gravity is pulling it down
-                firstGlyphLift.setPower(0.2);
-                //LinearOpMode.class.wait allows sensor to move away from the magnet
-                LinearOpMode.class.wait(200);
+                firstGlyphLift.setPower(0.3);
+                while (firstLiftSwitch.getState() && linearOpMode.opModeIsActive()) {
+                    //move away from Magnet
+                }
+                setLiftDirection(FIRST_LIFT, DOWN);
             }
             else {
                 //Don't allow to move up any further
@@ -172,7 +222,9 @@ public class functions{
 
             if(gamepad2.left_stick_y < 0){
                 firstGlyphLift.setPower(-0.5);
-                LinearOpMode.class.wait(400);
+                while (firstLiftSwitch.getState() && linearOpMode.opModeIsActive()) {
+                    //move away from Magnet
+                }
                 setLiftDirection(FIRST_LIFT, UP);
             }
             else{
@@ -181,13 +233,7 @@ public class functions{
             }
         }
         else{
-            if(gamepad2.left_stick_y > 0){
-                //Move slow regardless of input as gravity is pulling down
-                firstGlyphLift.setPower(0.2);
-            }
-            else{
-                firstGlyphLift.setPower(scaleInput(gamepad2.left_stick_y));
-            }
+            firstGlyphLift.setPower(scaleInput(gamepad2.left_stick_y));
             if(gamepad2.left_stick_y < 0){
                 setLiftDirection(FIRST_LIFT, UP);
             }
@@ -206,11 +252,10 @@ public class functions{
             linearOpMode.telemetry.update();
 
             if (gamepad2.right_stick_y > 0) {
-                //Move down at a slow speed as gravity is pulling it down
                 secondGlyphLift.setPower(-0.3);
-
-                LinearOpMode.class.wait(500);
-
+                while (secondLiftSwitch.getState() && linearOpMode.opModeIsActive()) {
+                    //move away from Magnet
+                }
                 setLiftDirection(SECOND_LIFT, DOWN);
             }
             else {
@@ -223,7 +268,9 @@ public class functions{
 
             if(gamepad2.right_stick_y < 0){
                 secondGlyphLift.setPower(0.5);
-                LinearOpMode.class.wait(500);
+                while (secondLiftSwitch.getState() && linearOpMode.opModeIsActive()) {
+                    //move away from Magnet
+                }
                 setLiftDirection(SECOND_LIFT, UP);
             }
             else{
@@ -231,20 +278,14 @@ public class functions{
             }
         }
         else{
-            if(gamepad2.right_stick_y > 0){
-                //Move slow regardless of input as gravity is pulling down
-                secondGlyphLift.setPower(0.2);
-            }
-            else{
-                secondGlyphLift.setPower(gamepad2.right_stick_y/2);
-            }
+
+            secondGlyphLift.setPower(gamepad2.right_stick_y/2);
             if(gamepad2.right_stick_y < 0){
                 setLiftDirection(SECOND_LIFT,UP);
             }
             else if(gamepad2.right_stick_y > 0){
                 setLiftDirection(SECOND_LIFT,DOWN);
             }
-
             linearOpMode.telemetry.addData("Second Lift", "Can move freely");
             linearOpMode.telemetry.update();
         }
@@ -341,7 +382,7 @@ public class functions{
 
        double[] sensorValues = new double[5];
        for ( int i=0 ; i< 5 ; i++ ){
-           sensorValues[i] = frontRangeSensor.getDistance(DistanceUnit.CM);
+           sensorValues[i] = sideRangeSensorFront.getDistance(DistanceUnit.CM);
            //TODO: should we wait for 100 ms before we take the next reading..
        }
        return sensorValues;
@@ -365,18 +406,21 @@ public class functions{
         //runningOpMode.addTelemetry("VuMark Detection State", "Starting", true);
 
         relicTrackables.activate();
-
+        //timer based fail safe logic
         long startTime = System.nanoTime();
-        long estimatedTime = System.nanoTime() - startTime;
+        long elapsedTime = 0;
 
         //try to read the vumark until we find a valid vumark or for 3 seconds
-        while(vuMark == RelicRecoveryVuMark.UNKNOWN  || TimeUnit.NANOSECONDS.toSeconds(estimatedTime) <= 3 ){
+        while(vuMark == RelicRecoveryVuMark.UNKNOWN  &&  elapsedTime <= 3000 && linearOpMode.opModeIsActive()){
             vuMark = RelicRecoveryVuMark.from(relicTemplate);
             if (vuMark != RelicRecoveryVuMark.UNKNOWN){
                 linearOpMode.telemetry.addData("Vumark Found", vuMark.toString());
                 linearOpMode.telemetry.update();
                 break;
             }
+            elapsedTime = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startTime);
+            linearOpMode.telemetry.addData("Elapsed Time to find VuMark:", Long.toString(elapsedTime));
+            linearOpMode.telemetry.update();
         }
 
         if (vuMark == RelicRecoveryVuMark.UNKNOWN){
@@ -407,12 +451,14 @@ public class functions{
 
         int columnsPassed = 0;
 
+
         double distanceToCryptoBoxWall = distanceToWall - 5;
 
         frontLeftDriveMotor.setPower(0.2);
         frontRightDriveMotor.setPower(-0.2);
         backLeftDriveMotor.setPower(0.2);
         backRightDriveMotor.setPower(-0.2);
+
         while(linearOpMode.opModeIsActive()) {
             if (sideRangeSensor.cmUltrasonic() <= distanceToCryptoBoxWall) {
                 columnsPassed++;
@@ -420,12 +466,10 @@ public class functions{
                 while (sideRangeSensor.cmUltrasonic() <= distanceToCryptoBoxWall && linearOpMode.opModeIsActive()) {
                 }
             }
+
             if (columnsPassed >= targetColumn) {
-                frontLeftDriveMotor.setPower(0);
-                frontRightDriveMotor.setPower(0);
-                backLeftDriveMotor.setPower(0);
-                backRightDriveMotor.setPower(0);
-                break;
+               stop();
+               break;
             }
 
             linearOpMode.telemetry.addData("Distance to Wall", distanceToWall);
@@ -434,6 +478,110 @@ public class functions{
             linearOpMode.telemetry.addData("Columns Passed", columnsPassed);
             linearOpMode.telemetry.update();
         }
+    }
+
+    //discard any accidental bad reading from the sensor
+    //TODO: add code to break after time elaspsed as well because the sensor could be bad
+
+    static public double readAndFilterRangeSensor(LinearOpMode linearOpMode) {
+        double distance =  sideRangeSensor.cmUltrasonic();
+        while ( (distance == 255 || distance ==0)  && linearOpMode.opModeIsActive() ) {
+            sideRangeSensor.cmUltrasonic();
+        }
+        return distance;
+    }
+
+    static public void moveUntilCryptoWallv2(double startDistance, RelicRecoveryVuMark vuMark, LinearOpMode linearOpMode) {
+        int targetColumn;
+        int cryptoWallMinVal = 5;
+
+        if(vuMark == RelicRecoveryVuMark.LEFT){
+            targetColumn = 1;
+        }
+        else if(vuMark == RelicRecoveryVuMark.CENTER){
+            targetColumn = 2;
+        }
+        else if(vuMark == RelicRecoveryVuMark.RIGHT){
+            targetColumn = 3;
+        }
+        else{
+            targetColumn = 1;
+        }
+        int columnsPassed = 0;
+        boolean firstTime=true;
+
+        double  distanceToCrypto = startDistance - cryptoWallMinVal;
+
+        frontLeftDriveMotor.setPower(0.24);
+        frontRightDriveMotor.setPower(-0.24);
+        backLeftDriveMotor.setPower(0.24);
+        backRightDriveMotor.setPower(-0.24);
+
+        long startTime = System.nanoTime();
+        long elapsedTime = 0;
+        String msg="";
+        double distance = readAndFilterRangeSensor(linearOpMode);
+
+        while ( linearOpMode.opModeIsActive() ) {
+
+            distance = readAndFilterRangeSensor(linearOpMode);
+
+            // while loop to move robot past each crypto column
+            // as soon as target column is seen break out of the loop and stop.
+            // sometimes the distance is less than the minimum distance of 5, so check if less than 5 or less than 4
+            while (  (distance <= distanceToCrypto || distance <= distanceToCrypto-1) && linearOpMode.opModeIsActive()) {
+
+                //column increased only the first time when there is a change in distance
+                if ( firstTime == true ){
+                    columnsPassed++;
+                    firstTime = false;
+                }
+
+                //target column is reached
+                if (columnsPassed >= targetColumn ) {
+                    break;
+                }
+                msg = Long.toString(elapsedTime) + ": "
+                        + Double.toString(distance)
+                        + " Column: " + Integer.toString(columnsPassed)
+                        + " CryptoDistance: " + distanceToCrypto;
+                linearOpMode.telemetry.addData("range:", msg);
+                linearOpMode.telemetry.update();
+                Log.d("JDRange", msg);
+                elapsedTime = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startTime);
+
+                distance = readAndFilterRangeSensor(linearOpMode);
+            }
+
+            //reset the first time for the next columns
+            if ( firstTime == false ) {
+                firstTime = true;
+            }
+
+            //adjust the minimum distance based on the new reading as the robot might have drifted
+            distanceToCrypto = distance - cryptoWallMinVal;
+
+            msg = Long.toString(elapsedTime) + ": "
+                    + Double.toString(distance)
+                    + " Column: " + Integer.toString(columnsPassed)
+                    + " CryptoDistance: " + distanceToCrypto;
+            linearOpMode.telemetry.addData("range:", msg);
+            linearOpMode.telemetry.update();
+            Log.d("JDRange", msg);
+            elapsedTime = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startTime);
+
+            //if target reached break out of the main while loop
+            if (columnsPassed >= targetColumn ) {
+                break;
+            }
+
+        }
+
+        frontLeftDriveMotor.setPower(0);
+        frontRightDriveMotor.setPower(0);
+        backLeftDriveMotor.setPower(0);
+        backRightDriveMotor.setPower(0);
+
     }
 
     //AVT Algorithm to filter range sensor values and return the sampled distance
