@@ -33,8 +33,6 @@ public class JDAuto extends LinearOpMode{
     Servo jewelArm = null;
 
     ColorSensor JewelColor = null;
-    ColorSensor StoneColor = null;
-
 
     @Override
 
@@ -52,9 +50,7 @@ public class JDAuto extends LinearOpMode{
         jewelKnocker = hardwareMap.servo.get("servoJewelKnock");
         jewelArm = hardwareMap.servo.get("servoJewelArm");
 
-        JewelColor = hardwareMap.colorSensor.get("jewelColorFound");
-        StoneColor = hardwareMap.colorSensor.get("stoneFound");
-
+        JewelColor = hardwareMap.colorSensor.get("color1");
 
         JEWEL_KNOCKER_INIT_POSITION = 0.5;
         Thread.sleep(200);
@@ -67,10 +63,16 @@ public class JDAuto extends LinearOpMode{
         while(opModeIsActive()) {
 
             waitForStart();
+//<<<<<<< HEAD
+
+//=======
             if(jewelColorFound == 0){}
             //do nothing
             if(jewelColorFound == stoneFound){}
+            //knock opposite
             if(jewelColorFound != stoneFound){}
+            //knock same
+//>>>>>>> 6cdc3587bb71ff22a0831a0017765346113cb068
 
         }
     }
