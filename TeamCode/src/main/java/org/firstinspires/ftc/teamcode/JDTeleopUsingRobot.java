@@ -3,16 +3,9 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import static org.firstinspires.ftc.teamcode.functions.closeGrabber;
-import static org.firstinspires.ftc.teamcode.functions.firstLift;
-import static org.firstinspires.ftc.teamcode.functions.initServos;
-import static org.firstinspires.ftc.teamcode.functions.move;
-import static org.firstinspires.ftc.teamcode.functions.openGrabber;
-import static org.firstinspires.ftc.teamcode.functions.openGrabberWide;
-import static org.firstinspires.ftc.teamcode.functions.scaleInput;
-import static org.firstinspires.ftc.teamcode.functions.secondLift;
-import static org.firstinspires.ftc.teamcode.hardware.initHardwareMap;
-
+import static org.firstinspires.ftc.teamcode.constants.*;
+import static org.firstinspires.ftc.teamcode.functions.*;
+import static org.firstinspires.ftc.teamcode.hardware.*;
 
 
 
@@ -86,17 +79,17 @@ public class JDTeleopUsingRobot extends LinearOpMode{
             move(gamepad1LeftY, gamepad1RightY, gamepad1LeftX, gamepad1RightX);
 
             if(gamepad2.a){
-                closeGrabber();
+                closeGrabber(constants.BOTH_GRABBERS);
             }
             else if(gamepad2.b){
-                openGrabber();
+                openGrabber(constants.BOTH_GRABBERS);
             }
             else if(gamepad2.y){
-                openGrabberWide();
+                openGrabberWide(constants.BOTH_GRABBERS);
             }
 
-            firstLift(gamepad2);
-            secondLift(gamepad2);
+            firstLift(gamepad2, this);
+            secondLift(gamepad2, this );
         }
     }
 }
