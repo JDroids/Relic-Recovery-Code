@@ -35,7 +35,7 @@ public class hardware{
 
     static ColorSensor jewelColorSensor = null;
     static ModernRoboticsI2cRangeSensor sideRangeSensor;
-    static ModernRoboticsI2cRangeSensor sideRangeSensorFront;
+    static ModernRoboticsI2cRangeSensor rearRangeSensor;
     static BNO055IMU imuSensor = null;
 
     static public boolean initHardwareMap(HardwareMap map){
@@ -69,6 +69,7 @@ public class hardware{
             jewelColorSensor = hMap.colorSensor.get("color1");
 
             sideRangeSensor = hMap.get(ModernRoboticsI2cRangeSensor.class, "sideRange");
+            rearRangeSensor = hMap.get(ModernRoboticsI2cRangeSensor.class, "rearRange");
 
             return true;
         }

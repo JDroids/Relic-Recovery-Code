@@ -72,10 +72,10 @@ public class JDTeleopUsingRobot extends LinearOpMode{
         initServos();
 
         while(opModeIsActive()){
-            gamepad1LeftY = scaleInput(gamepad1.left_stick_y);
-            gamepad1RightY = scaleInput(gamepad1.right_stick_y);
-            gamepad1LeftX = scaleInput(gamepad1.left_stick_x);
-            gamepad1RightX = scaleInput(gamepad1.right_stick_x);
+            gamepad1LeftY = scaleInputFixedSpeed(gamepad1.left_stick_y);
+            gamepad1RightY = scaleInputFixedSpeed(gamepad1.right_stick_y);
+            gamepad1LeftX = scaleInputFixedSpeed(gamepad1.left_stick_x);
+            gamepad1RightX = scaleInputFixedSpeed(gamepad1.right_stick_x);
 
             move(gamepad1LeftY, gamepad1RightY, gamepad1LeftX, gamepad1RightX);
 

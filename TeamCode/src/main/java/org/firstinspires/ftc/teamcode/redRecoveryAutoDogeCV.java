@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import android.graphics.Color;
 import android.util.Log;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
@@ -52,8 +53,15 @@ public class redRecoveryAutoDogeCV extends LinearOpMode{
         telemetry.update();
 
         waitForStart();
+        //Code to run after play is pressed
 
-       //Code to run after play is pressed
+        //get the jewel
+        lowerJewelArms(this);
+        JDColor jewelColor = detectJewelColor(this );
+        knockJewel(jewelColor, JDColor.RED, this);
+        raiseJewelArms(this);
+
+        //detect the VuMark
         telemetry.addData("Vumark:", "Initializing");
         telemetry.update();
         RelicRecoveryVuMark vuMark = getVumark(this, hardwareMap);
@@ -62,8 +70,10 @@ public class redRecoveryAutoDogeCV extends LinearOpMode{
 
         sleep(1000);
 
+        //grab the block
         closeGrabber(BOTTOM_GRABBER);
 
+        //go to cryptobox
         moveUntilCryptoWallv2(distanceToWall,vuMark, this);
 
         //turn(90, this);

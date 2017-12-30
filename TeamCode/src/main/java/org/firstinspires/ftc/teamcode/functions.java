@@ -8,6 +8,7 @@ import com.disnodeteam.dogecv.detectors.CryptoboxDetector;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.sun.source.tree.ForLoopTree;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -31,7 +32,7 @@ import static org.firstinspires.ftc.teamcode.constants.DOWN;
 import static org.firstinspires.ftc.teamcode.constants.FIRST_LIFT;
 import static org.firstinspires.ftc.teamcode.constants.JEWEL_ARM_INIT_POSITION;
 import static org.firstinspires.ftc.teamcode.constants.JEWEL_KNOCKER_INIT_POSITION;
-import static org.firstinspires.ftc.teamcode.constants.JewelColor;
+import static org.firstinspires.ftc.teamcode.constants.JDColor;
 import static org.firstinspires.ftc.teamcode.constants.SECOND_LIFT;
 import static org.firstinspires.ftc.teamcode.constants.TOP_SERVO_GRABBER_INIT_POSITION;
 import static org.firstinspires.ftc.teamcode.constants.BOTTOM_SERVO_GRABBER_INIT_POSITION;
@@ -62,7 +63,7 @@ import static org.firstinspires.ftc.teamcode.hardware.jewelKnocker;
 import static org.firstinspires.ftc.teamcode.hardware.secondGlyphLift;
 import static org.firstinspires.ftc.teamcode.hardware.secondLiftSwitch;
 import static org.firstinspires.ftc.teamcode.hardware.sideRangeSensor;
-import static org.firstinspires.ftc.teamcode.hardware.sideRangeSensorFront;
+import static org.firstinspires.ftc.teamcode.hardware.rearRangeSensor;
 
 /**
  * Created by dansm on 12/13/2017.
@@ -84,7 +85,7 @@ public class functions{
 
     //scaling logic 2 to use 3 fixed speeds as opposed to varying speeds to avoid jerks while driving
     static public double scaleInputFixedSpeed(double dVal) throws InterruptedException {
-        int sign = (int) (dVal/ dVal);
+        int sign = (int) (dVal/ Math.abs(dVal));
         double result = Math.abs(dVal);
 
         if ( result < 0.4 ) {
@@ -205,10 +206,10 @@ public class functions{
             linearOpMode.telemetry.update();
 
             if (gamepad2.left_stick_y > 0) {
+                //Move down at a slow speed as gravity is pulling it down
                 firstGlyphLift.setPower(0.3);
-                while (firstLiftSwitch.getState() && linearOpMode.opModeIsActive()) {
-                    //move away from Magnet
-                }
+                //LinearOpMode.class.wait allows sensor to move away from the magnet
+                linearOpMode.sleep(200);
                 setLiftDirection(FIRST_LIFT, DOWN);
             }
             else {
@@ -222,9 +223,8 @@ public class functions{
 
             if(gamepad2.left_stick_y < 0){
                 firstGlyphLift.setPower(-0.5);
-                while (firstLiftSwitch.getState() && linearOpMode.opModeIsActive()) {
-                    //move away from Magnet
-                }
+               //LinearOpMode.class.wait allows sensor to move away from the magnet
+                linearOpMode.sleep(400);
                 setLiftDirection(FIRST_LIFT, UP);
             }
             else{
@@ -253,9 +253,7 @@ public class functions{
 
             if (gamepad2.right_stick_y > 0) {
                 secondGlyphLift.setPower(-0.3);
-                while (secondLiftSwitch.getState() && linearOpMode.opModeIsActive()) {
-                    //move away from Magnet
-                }
+                linearOpMode.sleep(500);
                 setLiftDirection(SECOND_LIFT, DOWN);
             }
             else {
@@ -268,9 +266,7 @@ public class functions{
 
             if(gamepad2.right_stick_y < 0){
                 secondGlyphLift.setPower(0.5);
-                while (secondLiftSwitch.getState() && linearOpMode.opModeIsActive()) {
-                    //move away from Magnet
-                }
+                linearOpMode.sleep(500);
                 setLiftDirection(SECOND_LIFT, UP);
             }
             else{
@@ -279,7 +275,7 @@ public class functions{
         }
         else{
 
-            secondGlyphLift.setPower(gamepad2.right_stick_y/2);
+            secondGlyphLift.setPower(gamepad2.right_stick_y/-2);
             if(gamepad2.right_stick_y < 0){
                 setLiftDirection(SECOND_LIFT,UP);
             }
@@ -306,10 +302,40 @@ public class functions{
     static public void lowerJewelArms(LinearOpMode linearOpMode){
         jewelKnocker.setPosition(0.5);
         linearOpMode.sleep(200);
-
-        jewelArm.setPosition(0.05);
-        linearOpMode.sleep(200);
+        jewelArm.setPosition(0);
+        linearOpMode.sleep(600);
     }
+
+    static public void raiseJewelArms(LinearOpMode linearOpMode){
+        jewelArm.setPosition(0.9);
+        linearOpMode.sleep(1000);
+        jewelKnocker.setPosition(0);
+        linearOpMode.sleep(500);
+    }
+
+    static public void knockJewel(JDColor jewelColor, JDColor stoneColor, LinearOpMode linearOpMode){
+        if(jewelColor == JDColor.NONE) {
+            //do nothing
+        }
+        else if (jewelColor == stoneColor){
+            kickOpposite(linearOpMode);
+        }
+        else if (jewelColor != stoneColor){
+            kickSame(linearOpMode);
+        }
+    }
+
+
+    static public void kickOpposite(LinearOpMode linearOpMode){
+        jewelKnocker.setPosition(0);
+        linearOpMode.sleep(1500);
+    }
+
+    static public void kickSame(LinearOpMode linearOpMode){
+        jewelKnocker.setPosition(1);
+        linearOpMode.sleep(1500);
+    }
+
 
     static public void turn(int degrees, LinearOpMode linearOpMode){
         Orientation angles;
@@ -347,15 +373,17 @@ public class functions{
         stop();
     }
 
-    static public JewelColor detectJewelColor(){
+    static public JDColor detectJewelColor(LinearOpMode linearOpMode){
 
-        JewelColor jewelColorFound = JewelColor.NONE;
+        JDColor jewelColorFound = JDColor.NONE;
 
         long startTime = System.nanoTime();
-        long estimatedTime = System.nanoTime() - startTime;
+        long elapsedTime = 0;
+        float hue = 0F;
 
-        while( TimeUnit.NANOSECONDS.toSeconds(estimatedTime) < 3 ||
-                jewelColorFound == JewelColor.RED || jewelColorFound == JewelColor.BLUE){
+        //read color for about 2 seconds
+        while( jewelColorFound == JDColor.RED || jewelColorFound == JDColor.BLUE
+                || elapsedTime < 2000) {
 
             // hsvValues is an array that will hold the hue, saturation, and value information.
             float hsvValues[] = {0F, 0F, 0F};
@@ -366,26 +394,38 @@ public class functions{
             // to amplify/attentuate the measured values.
             final double SCALE_FACTOR = 255;
             jewelColorSensor.enableLed(true);
-                // convert the RGB values to HSV values.
+
+            // convert the RGB values to HSV values.
             // multiply by the SCALE_FACTOR.
             // then cast it back to int (SCALE_FACTOR is a double)
             Color.RGBToHSV((int) (jewelColorSensor.red() * SCALE_FACTOR), (int) (jewelColorSensor.green() * SCALE_FACTOR),
                     (int) (jewelColorSensor.blue() * SCALE_FACTOR),hsvValues);
-            //TODO: based on hue value determine the color - look at Blocks code for the actual values
 
+            linearOpMode.telemetry.addData("hue", hsvValues[0]);
+            linearOpMode.telemetry.addData("S", hsvValues[1]);
+            linearOpMode.telemetry.addData("V", hsvValues[2]);
+            linearOpMode.telemetry.update();
+
+            hue  = hsvValues[0];
+
+            if (hue >= 190 && hue <= 235) {
+                jewelColorFound = JDColor.BLUE;
+            }
+            else if (hue <= 15 || hue >= 350) {
+                jewelColorFound = JDColor.RED;
+            }
+            else if (hue == 0) {
+                jewelColorFound = JDColor.NONE;
+            }
+
+            elapsedTime = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startTime);
         }
+
+        linearOpMode.telemetry.addData("hue", Float.toString(hue));
+        linearOpMode.telemetry.addData("Jewel Color", jewelColorFound.toString());
+        linearOpMode.telemetry.update();
+        jewelColorSensor.enableLed(false);
         return jewelColorFound;
-    }
-
-    //get five readings to sample
-    static public double[]  readDistanceFromPerimeterWallUsingRange(){
-
-       double[] sensorValues = new double[5];
-       for ( int i=0 ; i< 5 ; i++ ){
-           sensorValues[i] = sideRangeSensorFront.getDistance(DistanceUnit.CM);
-           //TODO: should we wait for 100 ms before we take the next reading..
-       }
-       return sensorValues;
     }
 
     static public RelicRecoveryVuMark getVumark(LinearOpMode linearOpMode, HardwareMap hMap){
@@ -481,12 +521,15 @@ public class functions{
     }
 
     //discard any accidental bad reading from the sensor
-    //TODO: add code to break after time elaspsed as well because the sensor could be bad
-
+    //break out of the loop if unable to read good sensor data within 200ms
     static public double readAndFilterRangeSensor(LinearOpMode linearOpMode) {
+        long startTime = System.nanoTime();
+        long elapsedTime = 0;
+
         double distance =  sideRangeSensor.cmUltrasonic();
-        while ( (distance == 255 || distance ==0)  && linearOpMode.opModeIsActive() ) {
+        while ( (distance == 255 || distance ==0 || elapsedTime < 200)  && linearOpMode.opModeIsActive() ) {
             sideRangeSensor.cmUltrasonic();
+            elapsedTime = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startTime);
         }
         return distance;
     }
@@ -526,9 +569,9 @@ public class functions{
 
             distance = readAndFilterRangeSensor(linearOpMode);
 
-            // while loop to move robot past each crypto column
-            // as soon as target column is seen break out of the loop and stop.
-            // sometimes the distance is less than the minimum distance of 5, so check if less than 5 or less than 4
+            // move robot past each crypto column
+            //as soon as target column is seen break out of the loop and stop.
+            //sometimes the distance is less than the minimum distance of 5, so check if less than 5 or less than 4
             while (  (distance <= distanceToCrypto || distance <= distanceToCrypto-1) && linearOpMode.opModeIsActive()) {
 
                 //column increased only the first time when there is a change in distance
@@ -585,7 +628,7 @@ public class functions{
     }
 
     //AVT Algorithm to filter range sensor values and return the sampled distance
-    // calculate average value
+    //calculate average value
     //AVT algorithm stands for Antonyan Vardan Transform and its implementation explained below.
     //Collect n samples of data
     //Calculate the standard deviation and average value
