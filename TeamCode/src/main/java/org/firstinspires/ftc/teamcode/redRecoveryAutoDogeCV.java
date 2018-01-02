@@ -1,9 +1,15 @@
 package org.firstinspires.ftc.teamcode;
 
+import android.graphics.Color;
+import android.util.Log;
+
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
+
+import java.util.concurrent.TimeUnit;
 
 import static org.firstinspires.ftc.teamcode.constants.*;
 import static org.firstinspires.ftc.teamcode.functions.*;
@@ -25,46 +31,75 @@ public class redRecoveryAutoDogeCV extends LinearOpMode{
 
         initServos();
 
-        double distanceToWall = sideRangeSensor.cmUltrasonic();
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
+        parameters.loggingEnabled      = true;
+        parameters.loggingTag          = "IMU";
+
+        imuSensor.initialize(parameters);
+        int MaxValue = 255;
+        double distanceToWall = sideRangeSensor.cmUltrasonic();;
+
+        //filter bad data maximum value
+        while ( !(distanceToWall < MaxValue) && !this.isStopRequested() ) {
+            distanceToWall = sideRangeSensor.cmUltrasonic();
+            telemetry.addData("Distance to wall", distanceToWall);
+            telemetry.update();
+        }
 
         telemetry.addData("Distance to wall", distanceToWall);
         telemetry.update();
 
         waitForStart();
-
         //Code to run after play is pressed
 
+        //get the jewel
+        lowerJewelArms(this);
+        JDColor jewelColor = detectJewelColor(this );
+        knockJewel(jewelColor, JDColor.RED, this);
+        raiseJewelArms(this);
+
+        //detect the VuMark
+        telemetry.addData("Vumark:", "Initializing");
+        telemetry.update();
         RelicRecoveryVuMark vuMark = getVumark(this, hardwareMap);
-
-        if(vuMark == RelicRecoveryVuMark.LEFT){
-            telemetry.addData("Column to Go For", "Left");
-        }
-        else if(vuMark == RelicRecoveryVuMark.CENTER){
-            telemetry.addData("Column to Go For", "Center");
-        }
-        else if(vuMark == RelicRecoveryVuMark.RIGHT){
-            telemetry.addData("Column to Go For", "Right");
-        }
-
+        telemetry.addData("Vumark:", vuMark.toString());
         telemetry.update();
 
-        sleep(2000);
+        sleep(1000);
 
+        //grab the block
         closeGrabber(BOTTOM_GRABBER);
 
+<<<<<<< HEAD
         moveUntilCryptoWall(distanceToWall, vuMark, RED, this);
+=======
+        //go to cryptobox
+        moveUntilCryptoWallv2(distanceToWall,vuMark, this);
 
+        //turn(90, this);
+>>>>>>> 7f85a32da006af1be030b1288d04a18b6ca6a23c
 
-        turn(90, this);
+        //sleep(100);
 
-        sleep(100);
+        //moveForTime(0.3, 300, this);
 
+        //openGrabber(BOTTOM_GRABBER);
+
+<<<<<<< HEAD
         moveForTime(0.3, 3000, this);
 
         openGrabber(BOTTOM_GRABBER);
         moveForTime(-0.3, 1000, this);
+=======
+        //moveForTime(-0.3, 100, this);
 
-        openGrabberWide(BOTTOM_GRABBER);
+        //openGrabberWide(BOTTOM_GRABBER);
+>>>>>>> 7f85a32da006af1be030b1288d04a18b6ca6a23c
+
+        //time to look for the second and third glyph
 
     }
 }

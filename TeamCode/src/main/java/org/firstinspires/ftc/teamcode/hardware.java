@@ -35,7 +35,7 @@ public class hardware{
 
     static ColorSensor jewelColorSensor = null;
     static ModernRoboticsI2cRangeSensor sideRangeSensor;
-    static ModernRoboticsI2cRangeSensor frontRangeSensor;
+    static ModernRoboticsI2cRangeSensor rearRangeSensor;
     static BNO055IMU imuSensor = null;
 
     static public boolean initHardwareMap(HardwareMap map){
@@ -68,17 +68,8 @@ public class hardware{
 
             jewelColorSensor = hMap.colorSensor.get("color1");
 
-            //frontRangeSensor = hMap.get(ModernRoboticsI2cRangeSensor.class, "frontRange");
             sideRangeSensor = hMap.get(ModernRoboticsI2cRangeSensor.class, "sideRange");
-
-            BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-            parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
-            parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
-            parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
-            parameters.loggingEnabled      = true;
-            parameters.loggingTag          = "IMU";
-
-            imuSensor.initialize(parameters);
+            rearRangeSensor = hMap.get(ModernRoboticsI2cRangeSensor.class, "rearRange");
 
             return true;
         }
