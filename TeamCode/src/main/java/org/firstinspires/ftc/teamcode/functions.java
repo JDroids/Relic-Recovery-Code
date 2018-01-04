@@ -620,7 +620,7 @@ public class functions{
             }
 
             //reset the first time for the next columns
-            if ( firstTime == false ){
+            if (!firstTime){
                 firstTime = true;
             }
 
@@ -642,11 +642,9 @@ public class functions{
             }
 
         }
+        stop();
 
-        frontLeftDriveMotor.setPower(0);
-        frontRightDriveMotor.setPower(0);
-        backLeftDriveMotor.setPower(0);
-        backRightDriveMotor.setPower(0);
+
 
     }
 
