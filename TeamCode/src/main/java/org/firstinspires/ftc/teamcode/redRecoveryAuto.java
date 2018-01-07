@@ -6,23 +6,9 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
 
-import static org.firstinspires.ftc.teamcode.constants.BOTTOM_GRABBER;
-import static org.firstinspires.ftc.teamcode.constants.JDColor;
-import static org.firstinspires.ftc.teamcode.constants.RED;
-import static org.firstinspires.ftc.teamcode.functions.closeGrabber;
-import static org.firstinspires.ftc.teamcode.functions.detectJewelColor;
-import static org.firstinspires.ftc.teamcode.functions.getVumark;
-import static org.firstinspires.ftc.teamcode.functions.initServos;
-import static org.firstinspires.ftc.teamcode.functions.knockJewel;
-import static org.firstinspires.ftc.teamcode.functions.lowerJewelArms;
-import static org.firstinspires.ftc.teamcode.functions.moveForTime;
-import static org.firstinspires.ftc.teamcode.functions.moveUntilCryptoWall;
-import static org.firstinspires.ftc.teamcode.functions.moveUntilCryptoWallv2;
-import static org.firstinspires.ftc.teamcode.functions.openGrabber;
-import static org.firstinspires.ftc.teamcode.functions.raiseJewelArms;
-import static org.firstinspires.ftc.teamcode.hardware.imuSensor;
-import static org.firstinspires.ftc.teamcode.hardware.initHardwareMap;
-import static org.firstinspires.ftc.teamcode.hardware.sideRangeSensor;
+import static org.firstinspires.ftc.teamcode.constants.*;
+import static org.firstinspires.ftc.teamcode.functions.*;
+import static org.firstinspires.ftc.teamcode.hardware.*;
 
 /**
  * Created by dansm on 12/21/2017.
@@ -52,7 +38,7 @@ public class redRecoveryAuto extends LinearOpMode{
         double distanceToWall = sideRangeSensor.cmUltrasonic();;
 
         //filter bad data maximum value
-        while ( !(distanceToWall < MaxValue) && !this.isStopRequested() ) {
+        while ( !(distanceToWall < MaxValue) && opModeIsActive()) {
             distanceToWall = sideRangeSensor.cmUltrasonic();
             telemetry.addData("Distance to wall", distanceToWall);
             telemetry.update();
@@ -83,7 +69,7 @@ public class redRecoveryAuto extends LinearOpMode{
         closeGrabber(BOTTOM_GRABBER);
 
 
-        moveUntilCryptoWall(distanceToWall, vuMark, RED, this);
+        //moveUntilCryptoWall(distanceToWall, vuMark, RED, this);
 
         //go to cryptobox
         moveUntilCryptoWallv2(distanceToWall,vuMark, this);
@@ -97,10 +83,10 @@ public class redRecoveryAuto extends LinearOpMode{
         //openGrabber(BOTTOM_GRABBER);
 
 
-        moveForTime(0.3, 3000, this);
+        //moveForTime(0.3, 3000, this);
 
-        openGrabber(BOTTOM_GRABBER);
-        moveForTime(-0.3, 1000, this);
+        //openGrabber(BOTTOM_GRABBER);
+        //moveForTime(-0.3, 1000, this);
 
         //moveForTime(-0.3, 100, this);
 

@@ -8,59 +8,16 @@ import com.disnodeteam.dogecv.detectors.CryptoboxDetector;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
+import org.firstinspires.ftc.robotcore.external.navigation.*;
 
 import java.util.concurrent.TimeUnit;
 
-import static org.firstinspires.ftc.teamcode.JDTeleopUsingRobot.getLiftDirection;
-import static org.firstinspires.ftc.teamcode.JDTeleopUsingRobot.setLiftDirection;
-import static org.firstinspires.ftc.teamcode.constants.BLUE;
-import static org.firstinspires.ftc.teamcode.constants.BOTH_GRABBERS;
-import static org.firstinspires.ftc.teamcode.constants.BOTTOM_GRABBER;
-import static org.firstinspires.ftc.teamcode.constants.BOTTOM_SERVO_GRABBER_CLOSE_POSITION;
-import static org.firstinspires.ftc.teamcode.constants.BOTTOM_SERVO_GRABBER_INIT_POSITION;
-import static org.firstinspires.ftc.teamcode.constants.BOTTOM_SERVO_GRABBER_OPEN_POSITION;
-import static org.firstinspires.ftc.teamcode.constants.BOTTOM_SERVO_GRABBER_WIDE_OPEN_POSITION;
-import static org.firstinspires.ftc.teamcode.constants.DOWN;
-import static org.firstinspires.ftc.teamcode.constants.FIRST_LIFT;
-import static org.firstinspires.ftc.teamcode.constants.JDColor;
-import static org.firstinspires.ftc.teamcode.constants.JEWEL_ARM_INIT_POSITION;
-import static org.firstinspires.ftc.teamcode.constants.JEWEL_KNOCKER_INIT_POSITION;
-import static org.firstinspires.ftc.teamcode.constants.RED;
-import static org.firstinspires.ftc.teamcode.constants.SECOND_LIFT;
-import static org.firstinspires.ftc.teamcode.constants.STRAFING_LIMIT;
-import static org.firstinspires.ftc.teamcode.constants.TOP_GRABBER;
-import static org.firstinspires.ftc.teamcode.constants.TOP_SERVO_GRABBER_CLOSE_POSITION;
-import static org.firstinspires.ftc.teamcode.constants.TOP_SERVO_GRABBER_INIT_POSITION;
-import static org.firstinspires.ftc.teamcode.constants.TOP_SERVO_GRABBER_OPEN_POSITION;
-import static org.firstinspires.ftc.teamcode.constants.TOP_SERVO_GRABBER_WIDE_OPEN_POSITION;
-import static org.firstinspires.ftc.teamcode.constants.UP;
-import static org.firstinspires.ftc.teamcode.hardware.backLeftDriveMotor;
-import static org.firstinspires.ftc.teamcode.hardware.backRightDriveMotor;
-import static org.firstinspires.ftc.teamcode.hardware.firstGlyphLift;
-import static org.firstinspires.ftc.teamcode.hardware.firstLiftSwitch;
-import static org.firstinspires.ftc.teamcode.hardware.frontLeftDriveMotor;
-import static org.firstinspires.ftc.teamcode.hardware.frontRightDriveMotor;
-import static org.firstinspires.ftc.teamcode.hardware.glyphGrabberBL;
-import static org.firstinspires.ftc.teamcode.hardware.glyphGrabberBR;
-import static org.firstinspires.ftc.teamcode.hardware.glyphGrabberTL;
-import static org.firstinspires.ftc.teamcode.hardware.glyphGrabberTR;
-import static org.firstinspires.ftc.teamcode.hardware.imuSensor;
-import static org.firstinspires.ftc.teamcode.hardware.jewelArm;
-import static org.firstinspires.ftc.teamcode.hardware.jewelColorSensor;
-import static org.firstinspires.ftc.teamcode.hardware.jewelKnocker;
-import static org.firstinspires.ftc.teamcode.hardware.secondGlyphLift;
-import static org.firstinspires.ftc.teamcode.hardware.secondLiftSwitch;
-import static org.firstinspires.ftc.teamcode.hardware.sideRangeSensor;
+import static org.firstinspires.ftc.teamcode.JDTeleopUsingRobot.*;
+import static org.firstinspires.ftc.teamcode.constants.*;
+import static org.firstinspires.ftc.teamcode.hardware.*;
 
 ;
 
@@ -374,15 +331,15 @@ public class functions{
 
     static public JDColor detectJewelColor(LinearOpMode linearOpMode){
 
+        float hue = 0;
+
         JDColor jewelColorFound = JDColor.NONE;
 
-        long startTime = System.nanoTime();
-        long elapsedTime = 0;
-        float hue = 0F;
+        ElapsedTime mRuntime = new ElapsedTime();
+        mRuntime.reset();
 
         //read color for about 2 seconds
-        while( jewelColorFound == JDColor.RED || jewelColorFound == JDColor.BLUE
-                || elapsedTime < 2000){
+        while( jewelColorFound == JDColor.NONE && mRuntime.time() < 2){
 
             // hsvValues is an array that will hold the hue, saturation, and value information.
             float hsvValues[] ={0F, 0F, 0F};
@@ -405,7 +362,7 @@ public class functions{
             linearOpMode.telemetry.addData("V", hsvValues[2]);
             linearOpMode.telemetry.update();
 
-            hue  = hsvValues[0];
+            hue = hsvValues[0];
 
             if (hue >= 190 && hue <= 235){
                 jewelColorFound = JDColor.BLUE;
@@ -416,8 +373,6 @@ public class functions{
             else if (hue == 0){
                 jewelColorFound = JDColor.NONE;
             }
-
-            elapsedTime = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startTime);
         }
 
         linearOpMode.telemetry.addData("hue", Float.toString(hue));
@@ -578,14 +533,16 @@ public class functions{
 
         double  distanceToCrypto = startDistance - cryptoWallMinVal;
 
-        frontLeftDriveMotor.setPower(0.24);
-        frontRightDriveMotor.setPower(-0.24);
-        backLeftDriveMotor.setPower(0.24);
-        backRightDriveMotor.setPower(-0.24);
+        frontLeftDriveMotor.setPower(0.15);
+        frontRightDriveMotor.setPower(-0.15);
+        backLeftDriveMotor.setPower(0.15);
+        backRightDriveMotor.setPower(-0.15);
 
-        long startTime = System.nanoTime();
-        long elapsedTime = 0;
+        ElapsedTime mRuntime = new ElapsedTime();
+        mRuntime.reset();
+
         String msg="";
+
         double distance = readAndFilterRangeSensor(linearOpMode);
 
         while ( linearOpMode.opModeIsActive() ){
@@ -598,7 +555,7 @@ public class functions{
             while (  (distance <= distanceToCrypto || distance <= distanceToCrypto-1) && linearOpMode.opModeIsActive()){
 
                 //column increased only the first time when there is a change in distance
-                if ( firstTime == true ){
+                if (firstTime){
                     columnsPassed++;
                     firstTime = false;
                 }
@@ -607,14 +564,13 @@ public class functions{
                 if (columnsPassed >= targetColumn ){
                     break;
                 }
-                msg = Long.toString(elapsedTime) + ": "
+                msg = Double.toString(mRuntime.milliseconds()) + ": "
                         + Double.toString(distance)
                         + " Column: " + Integer.toString(columnsPassed)
                         + " CryptoDistance: " + distanceToCrypto;
                 linearOpMode.telemetry.addData("range:", msg);
                 linearOpMode.telemetry.update();
                 Log.d("JDRange", msg);
-                elapsedTime = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startTime);
 
                 distance = readAndFilterRangeSensor(linearOpMode);
             }
@@ -627,14 +583,13 @@ public class functions{
             //adjust the minimum distance based on the new reading as the robot might have drifted
             distanceToCrypto = distance - cryptoWallMinVal;
 
-            msg = Long.toString(elapsedTime) + ": "
+            msg = Double.toString(mRuntime.milliseconds()) + ": "
                     + Double.toString(distance)
                     + " Column: " + Integer.toString(columnsPassed)
                     + " CryptoDistance: " + distanceToCrypto;
             linearOpMode.telemetry.addData("range:", msg);
             linearOpMode.telemetry.update();
             Log.d("JDRange", msg);
-            elapsedTime = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startTime);
 
             //if target reached break out of the main while loop
             if (columnsPassed >= targetColumn ){
