@@ -14,7 +14,7 @@ import static org.firstinspires.ftc.teamcode.hardware.*;
  */
 
 @Autonomous(name="BLUERecoveryAuto")
-public class blueRecoveryAutoDogeCV extends LinearOpMode{
+public class blueRecoveryAuto extends LinearOpMode{
 
     @Override
     public void runOpMode() throws InterruptedException{

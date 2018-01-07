@@ -29,7 +29,7 @@ import static org.firstinspires.ftc.teamcode.hardware.sideRangeSensor;
  */
 
 @Autonomous(name="REDRecoveryAuto")
-public class redRecoveryAutoDogeCV extends LinearOpMode{
+public class redRecoveryAuto extends LinearOpMode{
 
     @Override
     public void runOpMode() throws InterruptedException{
