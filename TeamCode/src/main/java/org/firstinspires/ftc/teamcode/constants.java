@@ -36,4 +36,6 @@ public class constants{
     static int RED = 0;
     static int BLUE = 1;
 
+    static double MAX_NUMBER_WITHIN_RANGE_OF_TWITCHINESS = 0.1;
+
 }

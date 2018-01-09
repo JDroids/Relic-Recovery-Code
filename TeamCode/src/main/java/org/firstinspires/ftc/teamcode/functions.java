@@ -15,7 +15,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.*;
 
 import java.util.concurrent.TimeUnit;
 
-import static org.firstinspires.ftc.teamcode.JDTeleopUsingRobot.*;
+import static org.firstinspires.ftc.teamcode.JDTeleop.*;
 import static org.firstinspires.ftc.teamcode.constants.*;
 import static org.firstinspires.ftc.teamcode.hardware.*;
 
@@ -41,10 +41,19 @@ public class functions{
 
     //scaling logic 2 to use 3 fixed speeds as opposed to varying speeds to avoid jerks while driving
     static public double scaleInputFixedSpeed(double dVal) throws InterruptedException{
-        int sign = (int) (dVal/ Math.abs(dVal));
+        int sign;
+
+        if(-MAX_NUMBER_WITHIN_RANGE_OF_TWITCHINESS <= dVal && dVal <= MAX_NUMBER_WITHIN_RANGE_OF_TWITCHINESS) {
+            sign = (int) (dVal / Math.abs(dVal));
+        }
+        else{
+            sign=1;
+            return 0.0;
+        }
+
         double result = Math.abs(dVal);
 
-        if ( result < 0.4 ){
+        if( result < 0.4 ){
             result = 0.3;
         }
         else if (result < 0.7){
@@ -120,6 +129,26 @@ public class functions{
         }
     }
 
+    static public void moveInAStraightLine(double speed, boolean strafe){
+        if(!strafe){
+            moveInAStraightLine(speed);
+        }
+        else{
+            //Strafe; Positive speed is left, negative is right
+            frontLeftDriveMotor.setPower(-speed);
+            frontRightDriveMotor.setPower(-speed);
+            backLeftDriveMotor.setPower(speed);
+            backRightDriveMotor.setPower(speed);
+        }
+    }
+
+    static public void moveInAStraightLine(double speed){
+        frontLeftDriveMotor.setPower(speed);
+        frontRightDriveMotor.setPower(-speed);
+        backLeftDriveMotor.setPower(speed);
+        backRightDriveMotor.setPower(-speed);
+    }
+
     static public void move(double leftY, double rightY, double leftX, double rightX) throws InterruptedException{
         if(leftX >= STRAFING_LIMIT && rightX >= STRAFING_LIMIT || leftX <= -STRAFING_LIMIT && rightX <= -STRAFING_LIMIT){
             //To strafe either left or right
@@ -147,10 +176,7 @@ public class functions{
     }
 
     static public void moveForTime(double power, int milliseconds, LinearOpMode linearOpMode){
-        frontLeftDriveMotor.setPower(-power);
-        frontRightDriveMotor.setPower(power);
-        backLeftDriveMotor.setPower(-power);
-        backRightDriveMotor.setPower(power);
+        moveInAStraightLine(power);
 
         linearOpMode.sleep(milliseconds);
         stop();
