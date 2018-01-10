@@ -11,13 +11,58 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
-import org.firstinspires.ftc.robotcore.external.navigation.*;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 
 import java.util.concurrent.TimeUnit;
 
-import static org.firstinspires.ftc.teamcode.JDTeleop.*;
-import static org.firstinspires.ftc.teamcode.constants.*;
-import static org.firstinspires.ftc.teamcode.hardware.*;
+import static org.firstinspires.ftc.teamcode.JDTeleop.getLiftDirection;
+import static org.firstinspires.ftc.teamcode.JDTeleop.setLiftDirection;
+import static org.firstinspires.ftc.teamcode.constants.BLUE;
+import static org.firstinspires.ftc.teamcode.constants.BOTH_GRABBERS;
+import static org.firstinspires.ftc.teamcode.constants.BOTTOM_GRABBER;
+import static org.firstinspires.ftc.teamcode.constants.BOTTOM_SERVO_GRABBER_CLOSE_POSITION;
+import static org.firstinspires.ftc.teamcode.constants.BOTTOM_SERVO_GRABBER_INIT_POSITION;
+import static org.firstinspires.ftc.teamcode.constants.BOTTOM_SERVO_GRABBER_OPEN_POSITION;
+import static org.firstinspires.ftc.teamcode.constants.BOTTOM_SERVO_GRABBER_WIDE_OPEN_POSITION;
+import static org.firstinspires.ftc.teamcode.constants.DOWN;
+import static org.firstinspires.ftc.teamcode.constants.FIRST_LIFT;
+import static org.firstinspires.ftc.teamcode.constants.JDColor;
+import static org.firstinspires.ftc.teamcode.constants.JEWEL_ARM_INIT_POSITION;
+import static org.firstinspires.ftc.teamcode.constants.JEWEL_KNOCKER_INIT_POSITION;
+import static org.firstinspires.ftc.teamcode.constants.MAX_NUMBER_WITHIN_RANGE_OF_TWITCHINESS;
+import static org.firstinspires.ftc.teamcode.constants.RED;
+import static org.firstinspires.ftc.teamcode.constants.SECOND_LIFT;
+import static org.firstinspires.ftc.teamcode.constants.STRAFING_LIMIT;
+import static org.firstinspires.ftc.teamcode.constants.TOP_GRABBER;
+import static org.firstinspires.ftc.teamcode.constants.TOP_SERVO_GRABBER_CLOSE_POSITION;
+import static org.firstinspires.ftc.teamcode.constants.TOP_SERVO_GRABBER_INIT_POSITION;
+import static org.firstinspires.ftc.teamcode.constants.TOP_SERVO_GRABBER_OPEN_POSITION;
+import static org.firstinspires.ftc.teamcode.constants.TOP_SERVO_GRABBER_WIDE_OPEN_POSITION;
+import static org.firstinspires.ftc.teamcode.constants.UP;
+import static org.firstinspires.ftc.teamcode.hardware.backLeftDriveMotor;
+import static org.firstinspires.ftc.teamcode.hardware.backRightDriveMotor;
+import static org.firstinspires.ftc.teamcode.hardware.firstGlyphLift;
+import static org.firstinspires.ftc.teamcode.hardware.firstLiftSwitch;
+import static org.firstinspires.ftc.teamcode.hardware.frontLeftDriveMotor;
+import static org.firstinspires.ftc.teamcode.hardware.frontRightDriveMotor;
+import static org.firstinspires.ftc.teamcode.hardware.glyphGrabberBL;
+import static org.firstinspires.ftc.teamcode.hardware.glyphGrabberBR;
+import static org.firstinspires.ftc.teamcode.hardware.glyphGrabberTL;
+import static org.firstinspires.ftc.teamcode.hardware.glyphGrabberTR;
+import static org.firstinspires.ftc.teamcode.hardware.imuSensor;
+import static org.firstinspires.ftc.teamcode.hardware.jewelArm;
+import static org.firstinspires.ftc.teamcode.hardware.jewelColorSensor;
+import static org.firstinspires.ftc.teamcode.hardware.jewelKnocker;
+import static org.firstinspires.ftc.teamcode.hardware.secondGlyphLift;
+import static org.firstinspires.ftc.teamcode.hardware.secondLiftSwitch;
+import static org.firstinspires.ftc.teamcode.hardware.sideRangeSensor;
 
 ;
 
@@ -80,6 +125,21 @@ public class functions{
             glyphGrabberTL.setPosition(leftServoPosition);
             glyphGrabberTR.setPosition(rightServoPosition);
         }
+    }
+
+    public void moveArcadeMecanum(Gamepad gamepad){
+        double r = Math.hypot(gamepad.left_stick_x, gamepad.left_stick_y);
+        double robotAngle = Math.atan2(gamepad.left_stick_y, gamepad.left_stick_x) - Math.PI / 4;
+        double rightX = gamepad.right_stick_x;
+        final double v1 = r * Math.cos(robotAngle) + rightX;
+        final double v2 = r * Math.sin(robotAngle) - rightX;
+        final double v3 = r * Math.sin(robotAngle) + rightX;
+        final double v4 = r * Math.cos(robotAngle) - rightX;
+
+        frontLeftDriveMotor.setPower(v1);
+        frontRightDriveMotor.setPower(v2);
+        backLeftDriveMotor.setPower(v3);
+        backRightDriveMotor.setPower(v4);
     }
 
     static public void setJewelPosition(double jewelKnockerPosition, double jewelArmPosition){
@@ -322,7 +382,10 @@ public class functions{
     static public void turn(int degrees, LinearOpMode linearOpMode){
         Orientation angles;
 
+        //TODO: reset IMU
+
         angles = imuSensor.getAngularOrientation().toAxesReference(AxesReference.INTRINSIC).toAxesOrder(AxesOrder.ZYX).toAngleUnit(AngleUnit.DEGREES);
+
         float originalZ = angles.firstAngle;
         float currentZ = angles.firstAngle;
 
@@ -353,6 +416,10 @@ public class functions{
         }
 
         stop();
+    }
+
+    static public void turnPID(int degrees, LinearOpMode linearOpMode){
+
     }
 
     static public JDColor detectJewelColor(LinearOpMode linearOpMode){
