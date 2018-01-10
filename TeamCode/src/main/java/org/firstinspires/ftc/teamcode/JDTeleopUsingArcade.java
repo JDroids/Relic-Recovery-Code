@@ -15,7 +15,7 @@ import static org.firstinspires.ftc.teamcode.hardware.*;
 @TeleOp(name="JDTeleOpJavaArcade")
 
 public class JDTeleopUsingArcade extends LinearOpMode{
-    
+
     @Override
 
     public void runOpMode() throws InterruptedException{
@@ -43,7 +43,7 @@ public class JDTeleopUsingArcade extends LinearOpMode{
             gamepad1LeftX = scaleInputFixedSpeed(gamepad1.left_stick_x);
             gamepad1RightX = scaleInputFixedSpeed(gamepad1.right_stick_x);
 
-
+            moveArcade(gamepad1);
 
             if(gamepad2.a){
                 closeGrabber(constants.BOTH_GRABBERS);

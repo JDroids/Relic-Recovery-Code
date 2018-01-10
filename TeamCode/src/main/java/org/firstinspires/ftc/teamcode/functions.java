@@ -127,7 +127,7 @@ public class functions{
         }
     }
 
-    public void moveArcadeMecanum(Gamepad gamepad){
+    static public void moveArcade(Gamepad gamepad){
         double r = Math.hypot(gamepad.left_stick_x, gamepad.left_stick_y);
         double robotAngle = Math.atan2(gamepad.left_stick_y, gamepad.left_stick_x) - Math.PI / 4;
         double rightX = gamepad.right_stick_x;
