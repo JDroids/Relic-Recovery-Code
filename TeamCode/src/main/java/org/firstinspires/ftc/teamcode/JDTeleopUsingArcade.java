@@ -22,11 +22,7 @@ public class JDTeleopUsingArcade extends LinearOpMode{
         //Code to run after init is pressed
         boolean hardwareMapState;
 
-        hardwareMapState = initHardwareMap(hardwareMap);
-
-        if(!hardwareMapState){
-            return;
-        }
+        initHardwareMap(hardwareMap);
 
         double gamepad1LeftY;
         double gamepad1RightY;
@@ -38,25 +34,23 @@ public class JDTeleopUsingArcade extends LinearOpMode{
 
         initServos();
 
-        while(opModeIsActive()){
+        while(opModeIsActive()) {
             gamepad1LeftY = scaleInputFixedSpeed(gamepad1.left_stick_y);
             gamepad1LeftX = scaleInputFixedSpeed(gamepad1.left_stick_x);
             gamepad1RightX = scaleInputFixedSpeed(gamepad1.right_stick_x);
 
             moveArcade(gamepad1);
 
-            if(gamepad2.a){
+            if (gamepad2.a) {
                 closeGrabber(constants.BOTH_GRABBERS);
-            }
-            else if(gamepad2.b){
+            } else if (gamepad2.b) {
                 openGrabber(constants.BOTH_GRABBERS);
-            }
-            else if(gamepad2.y){
+            } else if (gamepad2.y) {
                 openGrabberWide(constants.BOTH_GRABBERS);
             }
 
             firstLift(gamepad2, this);
-            secondLift(gamepad2, this );
+            secondLift(gamepad2, this);
         }
     }
 }

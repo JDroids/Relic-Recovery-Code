@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
+import static org.firstinspires.ftc.teamcode.constants.FIRST_LIFT;
+import static org.firstinspires.ftc.teamcode.constants.SECOND_LIFT;
 import static org.firstinspires.ftc.teamcode.functions.*;
 import static org.firstinspires.ftc.teamcode.hardware.*;
 
@@ -15,49 +17,13 @@ import static org.firstinspires.ftc.teamcode.hardware.*;
 @TeleOp(name="JDTeleOpJava")
 
 public class JDTeleop extends LinearOpMode{
-    static public int firstLiftDirection = -1;
-    static public int secondLiftDirection = -1;
-
-    static public int getLiftDirection(int lift){
-        if(lift == 1){
-            return firstLiftDirection;
-        }
-        else if(lift == 2){
-            return secondLiftDirection;
-        }
-        else{
-            //Should not be called EVER if coded properly
-            return 0;
-        }
-    }
-
-    static public void setLiftDirection(int lift, int value){
-        if(lift == 1){
-            firstLiftDirection = value;
-        }
-        else if(lift == 2){
-            secondLiftDirection = value;
-        }
-    }
-
-   public void addTelemetry(String caption, String telemetryValue, boolean update){
-        telemetry.addData(caption, telemetryValue);
-        if(update){
-            telemetry.update();
-        }
-    }
-
     @Override
 
     public void runOpMode() throws InterruptedException{
         //Code to run after init is pressed
         boolean hardwareMapState;
 
-        hardwareMapState = initHardwareMap(hardwareMap);
-
-        if(!hardwareMapState){
-            return;
-        }
+        initHardwareMap(hardwareMap);
 
         double gamepad1LeftY;
         double gamepad1RightY;
@@ -88,7 +54,7 @@ public class JDTeleop extends LinearOpMode{
             }
 
             firstLift(gamepad2, this);
-            secondLift(gamepad2, this );
+            secondLift(gamepad2, this);
         }
     }
 }

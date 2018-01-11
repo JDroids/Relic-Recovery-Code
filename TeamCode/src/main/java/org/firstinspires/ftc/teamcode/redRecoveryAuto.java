@@ -22,7 +22,7 @@ public class redRecoveryAuto extends LinearOpMode{
 
         //Code to run after init is pressed
 
-        boolean hardwareMapState = initHardwareMap(hardwareMap);
+        initHardwareMap(hardwareMap);
 
         initServos();
 

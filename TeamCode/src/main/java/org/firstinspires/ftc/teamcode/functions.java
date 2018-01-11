@@ -22,47 +22,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 
 import java.util.concurrent.TimeUnit;
 
-import static org.firstinspires.ftc.teamcode.JDTeleop.getLiftDirection;
-import static org.firstinspires.ftc.teamcode.JDTeleop.setLiftDirection;
-import static org.firstinspires.ftc.teamcode.constants.BLUE;
-import static org.firstinspires.ftc.teamcode.constants.BOTH_GRABBERS;
-import static org.firstinspires.ftc.teamcode.constants.BOTTOM_GRABBER;
-import static org.firstinspires.ftc.teamcode.constants.BOTTOM_SERVO_GRABBER_CLOSE_POSITION;
-import static org.firstinspires.ftc.teamcode.constants.BOTTOM_SERVO_GRABBER_INIT_POSITION;
-import static org.firstinspires.ftc.teamcode.constants.BOTTOM_SERVO_GRABBER_OPEN_POSITION;
-import static org.firstinspires.ftc.teamcode.constants.BOTTOM_SERVO_GRABBER_WIDE_OPEN_POSITION;
-import static org.firstinspires.ftc.teamcode.constants.DOWN;
-import static org.firstinspires.ftc.teamcode.constants.FIRST_LIFT;
-import static org.firstinspires.ftc.teamcode.constants.JDColor;
-import static org.firstinspires.ftc.teamcode.constants.JEWEL_ARM_INIT_POSITION;
-import static org.firstinspires.ftc.teamcode.constants.JEWEL_KNOCKER_INIT_POSITION;
-import static org.firstinspires.ftc.teamcode.constants.MAX_NUMBER_WITHIN_RANGE_OF_TWITCHINESS;
-import static org.firstinspires.ftc.teamcode.constants.RED;
-import static org.firstinspires.ftc.teamcode.constants.SECOND_LIFT;
-import static org.firstinspires.ftc.teamcode.constants.STRAFING_LIMIT;
-import static org.firstinspires.ftc.teamcode.constants.TOP_GRABBER;
-import static org.firstinspires.ftc.teamcode.constants.TOP_SERVO_GRABBER_CLOSE_POSITION;
-import static org.firstinspires.ftc.teamcode.constants.TOP_SERVO_GRABBER_INIT_POSITION;
-import static org.firstinspires.ftc.teamcode.constants.TOP_SERVO_GRABBER_OPEN_POSITION;
-import static org.firstinspires.ftc.teamcode.constants.TOP_SERVO_GRABBER_WIDE_OPEN_POSITION;
-import static org.firstinspires.ftc.teamcode.constants.UP;
-import static org.firstinspires.ftc.teamcode.hardware.backLeftDriveMotor;
-import static org.firstinspires.ftc.teamcode.hardware.backRightDriveMotor;
-import static org.firstinspires.ftc.teamcode.hardware.firstGlyphLift;
-import static org.firstinspires.ftc.teamcode.hardware.firstLiftSwitch;
-import static org.firstinspires.ftc.teamcode.hardware.frontLeftDriveMotor;
-import static org.firstinspires.ftc.teamcode.hardware.frontRightDriveMotor;
-import static org.firstinspires.ftc.teamcode.hardware.glyphGrabberBL;
-import static org.firstinspires.ftc.teamcode.hardware.glyphGrabberBR;
-import static org.firstinspires.ftc.teamcode.hardware.glyphGrabberTL;
-import static org.firstinspires.ftc.teamcode.hardware.glyphGrabberTR;
-import static org.firstinspires.ftc.teamcode.hardware.imuSensor;
-import static org.firstinspires.ftc.teamcode.hardware.jewelArm;
-import static org.firstinspires.ftc.teamcode.hardware.jewelColorSensor;
-import static org.firstinspires.ftc.teamcode.hardware.jewelKnocker;
-import static org.firstinspires.ftc.teamcode.hardware.secondGlyphLift;
-import static org.firstinspires.ftc.teamcode.hardware.secondLiftSwitch;
-import static org.firstinspires.ftc.teamcode.hardware.sideRangeSensor;
+import static org.firstinspires.ftc.teamcode.constants.*;
+import static org.firstinspires.ftc.teamcode.hardware.*;
 
 ;
 
@@ -242,8 +203,11 @@ public class functions{
         stop();
     }
 
+    static public int firstLiftDirection = -1;
+    static public int secondLiftDirection = -1;
+
     static public void firstLift(Gamepad gamepad2, LinearOpMode linearOpMode) throws InterruptedException{
-        if(!firstLiftSwitch.getState() && getLiftDirection(FIRST_LIFT) == UP){
+        if(!firstLiftSwitch.getState() && firstLiftDirection == UP){
             linearOpMode.telemetry.addData("First Lift", "Top Limit Reached - Move Down");
             linearOpMode.telemetry.update();
 
@@ -252,14 +216,14 @@ public class functions{
                 firstGlyphLift.setPower(0.3);
                 //LinearOpMode.class.wait allows sensor to move away from the magnet
                 linearOpMode.sleep(200);
-                setLiftDirection(FIRST_LIFT, DOWN);
+                firstLiftDirection = DOWN;
             }
             else{
                 //Don't allow to move up any further
                 firstGlyphLift.setPower(0);
             }
         }
-        else if(!firstLiftSwitch.getState() && getLiftDirection(FIRST_LIFT) == DOWN){
+        else if(!firstLiftSwitch.getState() && firstLiftDirection == DOWN){
             linearOpMode.telemetry.addData("First Lift", "Bottom Limit Reached - Move Up");
             linearOpMode.telemetry.update();
 
@@ -267,7 +231,7 @@ public class functions{
                 firstGlyphLift.setPower(-0.5);
                //LinearOpMode.class.wait allows sensor to move away from the magnet
                 linearOpMode.sleep(400);
-                setLiftDirection(FIRST_LIFT, UP);
+                firstLiftDirection = UP;
             }
             else{
                 //Don't allow to move down any further
@@ -277,10 +241,10 @@ public class functions{
         else{
             firstGlyphLift.setPower(scaleInput(gamepad2.left_stick_y));
             if(gamepad2.left_stick_y < 0){
-                setLiftDirection(FIRST_LIFT, UP);
+                firstLiftDirection = UP;
             }
             else if(gamepad2.left_stick_y > 0){
-                setLiftDirection(FIRST_LIFT, DOWN);
+                firstLiftDirection = DOWN;
             }
 
             linearOpMode.telemetry.addData("First Lift", "Can move freely", true);
@@ -289,27 +253,27 @@ public class functions{
     }
 
     static public void secondLift(Gamepad gamepad2, LinearOpMode linearOpMode) throws InterruptedException{
-        if(!secondLiftSwitch.getState() && getLiftDirection(SECOND_LIFT) == UP){
+        if(!secondLiftSwitch.getState() && secondLiftDirection == UP){
             linearOpMode.telemetry.addData("Second Lift", "Top Limit Reached - Move Down");
             linearOpMode.telemetry.update();
 
             if (gamepad2.right_stick_y > 0){
                 secondGlyphLift.setPower(-0.3);
                 linearOpMode.sleep(500);
-                setLiftDirection(SECOND_LIFT, DOWN);
+                secondLiftDirection = DOWN;
             }
             else{
                 secondGlyphLift.setPower(0);
             }
         }
-        else if(!secondLiftSwitch.getState() && getLiftDirection(SECOND_LIFT) == DOWN){
+        else if(!secondLiftSwitch.getState() && secondLiftDirection == DOWN){
             linearOpMode.telemetry.addData("Second Lift", "Bottom Limit Reached - Move Down");
             linearOpMode.telemetry.update();
 
             if(gamepad2.right_stick_y < 0){
                 secondGlyphLift.setPower(0.5);
                 linearOpMode.sleep(500);
-                setLiftDirection(SECOND_LIFT, UP);
+                secondLiftDirection = UP;
             }
             else{
                 secondGlyphLift.setPower(0);
@@ -319,10 +283,10 @@ public class functions{
 
             secondGlyphLift.setPower(gamepad2.right_stick_y/-2);
             if(gamepad2.right_stick_y < 0){
-                setLiftDirection(SECOND_LIFT,UP);
+                secondLiftDirection = UP;
             }
             else if(gamepad2.right_stick_y > 0){
-                setLiftDirection(SECOND_LIFT,DOWN);
+                secondLiftDirection = DOWN;
             }
             linearOpMode.telemetry.addData("Second Lift", "Can move freely");
             linearOpMode.telemetry.update();

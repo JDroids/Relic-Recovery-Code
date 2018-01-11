@@ -38,7 +38,7 @@ public class hardware{
     static ModernRoboticsI2cRangeSensor rearRangeSensor;
     static BNO055IMU imuSensor = null;
 
-    static public boolean initHardwareMap(HardwareMap map){
+    static public void initHardwareMap(HardwareMap map){
         HardwareMap hMap = map;
 
         try{
@@ -71,10 +71,9 @@ public class hardware{
             sideRangeSensor = hMap.get(ModernRoboticsI2cRangeSensor.class, "sideRange");
             rearRangeSensor = hMap.get(ModernRoboticsI2cRangeSensor.class, "rearRange");
 
-            return true;
         }
         catch(Exception e){
-            return false;
+            throw new java.lang.RuntimeException("Hardware Init failed");
         }
     }
 }
