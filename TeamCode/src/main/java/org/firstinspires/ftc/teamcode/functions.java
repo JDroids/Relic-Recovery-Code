@@ -34,22 +34,11 @@ import static org.firstinspires.ftc.teamcode.hardware.*;
 
 public class functions{
 
-    static public double scaleInput(double dVal) throws InterruptedException{
-        double result = Math.pow(dVal, 3);
-        if (result > 0.7){
-            result = 0.7;
-        }
-        else if (result < -0.7){
-            result = -0.7;
-        }
-        return result;
-    }
-
     //scaling logic 2 to use 3 fixed speeds as opposed to varying speeds to avoid jerks while driving
     static public double scaleInputFixedSpeed(double dVal) throws InterruptedException{
         int sign;
 
-        if(-MAX_NUMBER_WITHIN_RANGE_OF_TWITCHINESS <= dVal && dVal <= MAX_NUMBER_WITHIN_RANGE_OF_TWITCHINESS) {
+        if(dVal <= -MAX_NUMBER_WITHIN_RANGE_OF_TWITCHINESS || dVal >= MAX_NUMBER_WITHIN_RANGE_OF_TWITCHINESS) {
             sign = (int) (dVal / Math.abs(dVal));
         }
         else{
@@ -71,6 +60,17 @@ public class functions{
         return result*sign ;
     }
 
+    static public double scaleInput(double dVal) throws InterruptedException{
+        double result = Math.pow(dVal, 3);
+        if (result > 0.7){
+            result = 0.7;
+        }
+        else if (result < -0.7){
+            result = -0.7;
+        }
+        return result;
+    }
+
     static public void setGrabber(double leftServoPosition, double rightServoPosition, int grabbers) throws InterruptedException{
         if(grabbers == BOTH_GRABBERS){
             glyphGrabberTL.setPosition(leftServoPosition);
@@ -88,19 +88,19 @@ public class functions{
         }
     }
 
-    static public void moveArcade(Gamepad gamepad){
-        double r = Math.hypot(gamepad.left_stick_x, gamepad.left_stick_y);
-        double robotAngle = Math.atan2(gamepad.left_stick_y, gamepad.left_stick_x) - Math.PI / 4;
-        double rightX = gamepad.right_stick_x;
+    static public void moveArcade(Gamepad gamepad) throws InterruptedException{
+        double r = Math.hypot(-scaleInputFixedSpeed(gamepad.left_stick_x), scaleInputFixedSpeed(gamepad.left_stick_y));
+        double robotAngle = Math.atan2(scaleInputFixedSpeed(gamepad.left_stick_y), scaleInputFixedSpeed(-gamepad.left_stick_x)) - Math.PI / 4;
+        double rightX = scaleInputFixedSpeed(-gamepad.right_stick_x);
         final double v1 = r * Math.cos(robotAngle) + rightX;
         final double v2 = r * Math.sin(robotAngle) - rightX;
         final double v3 = r * Math.sin(robotAngle) + rightX;
         final double v4 = r * Math.cos(robotAngle) - rightX;
 
         frontLeftDriveMotor.setPower(v1);
-        frontRightDriveMotor.setPower(v2);
+        frontRightDriveMotor.setPower(-v2);
         backLeftDriveMotor.setPower(v3);
-        backRightDriveMotor.setPower(v4);
+        backRightDriveMotor.setPower(-v4);
     }
 
     static public void setJewelPosition(double jewelKnockerPosition, double jewelArmPosition){
@@ -230,7 +230,7 @@ public class functions{
             if(gamepad2.left_stick_y < 0){
                 firstGlyphLift.setPower(-0.5);
                //LinearOpMode.class.wait allows sensor to move away from the magnet
-                linearOpMode.sleep(400);
+                linearOpMode.sleep(500);
                 firstLiftDirection = UP;
             }
             else{
